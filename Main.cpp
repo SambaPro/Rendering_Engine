@@ -31,6 +31,7 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
 /* Settings */
 const unsigned int SCREEN_WIDTH = 800;
 const unsigned int SCREEN_HEIGHT = 600;
+bool scale = false;
 
 /* Initial mouse settings */
 bool initialMouse = true;
@@ -90,19 +91,23 @@ int main()
     /* Flip Textures */
     stbi_set_flip_vertically_on_load(true);
 
+
     /* Load Models */
     Model cubeModel("src/assets/cube/cube.obj");
     Model teapotModel("src/assets/teapot.obj");
+    ResourceManager::loadModel(cubeModel); // 0
+    ResourceManager::loadModel(teapotModel); // 1
+    ResourceManager::currentModel = ResourceManager::getModel(0);
+    
 
     /* Load Shaders */
     Shader colShader("src/shaders/vertex_shader.vs", "src/shaders/colour_shader.fs");
     Shader texshader("src/shaders/vertex_shader.vs", "src/shaders/texture_shader.fs");
     ResourceManager::loadShader(colShader); // 0
     ResourceManager::loadShader(texshader); // 1
-    Shader shader = ResourceManager::getShader(1);
     ResourceManager::currentShader = ResourceManager::getShader(1);
 
-    std::cout << "Current shader ID is " << ResourceManager::currentShader.ID << std::endl;
+    //std::cout << "Current shader ID is " << ResourceManager::currentShader.ID << std::endl;
 
     /* Load Texture */
     unsigned int texture1 {0};
@@ -147,9 +152,15 @@ int main()
         // render gemetry
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // centre model
-        model = scale_world(model, 1);
+        
+        if (scale == true)
+            model = scale_world(model, 0.1);
+
+        else
+            model = scale_world(model, 4);
+
         ResourceManager::currentShader.setMat4("model", model);
-        cubeModel.drawModel(ResourceManager::currentShader);
+        ResourceManager::currentModel.drawModel(ResourceManager::currentShader);
 
 
         /* ImuGUI */
@@ -296,7 +307,8 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
     if (ImGui::Button("Cube"))
     {
         std::cout << "Changing model to Cube" << std::endl;
-
+        scale = false;
+        ResourceManager::currentModel = ResourceManager::getModel(0);
     }
 
     ImGui::SameLine();
@@ -304,7 +316,8 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
     if (ImGui::Button("Teapot"))
     {
         std::cout << "Changing model to Teapotd" << std::endl;
-
+        scale = true;
+        ResourceManager::currentModel = ResourceManager::getModel(1);
     }
 
 

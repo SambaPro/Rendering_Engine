@@ -12,15 +12,15 @@ class ResourceManager
 {
 public:
 	static std::vector<Shader> Shaders;
-	//std::map<std::string, Texture> Textures;
-	//std::map<std::string, Model> Models;
+	//static std::map<std::string, Texture> Textures;
+	static std::vector<Model> Models;
 
 	static Shader currentShader;
+	static Model currentModel;
 
 	static void loadShader(Shader shader)
 	{
 		Shaders.push_back(shader);
-
 		std::cout << Shaders.back().ID;
 		std::cout << "Shader loaded Successfully" << std::endl;
 	}
@@ -29,6 +29,18 @@ public:
 	{
 		return Shaders[index];
 	}
+
+	static void loadModel(Model model)
+	{
+		Models.push_back(model);
+		std::cout << "Model loaded sucessfully" << std::endl;
+	}
+
+	static Model getModel(int index)
+	{
+		return Models[index];
+	}
+
 
 private:
 	ResourceManager() { }

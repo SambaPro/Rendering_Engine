@@ -23,6 +23,7 @@ public:
 	std::string directory;
 
 	/* Model Constructor*/
+	Model() {};
 	Model(const char* path)
 	{
 		loadModel(path);
