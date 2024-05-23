@@ -36,15 +36,10 @@ const unsigned int SCREEN_HEIGHT = 600;
 bool initialMouse = true;
 float lastX = SCREEN_WIDTH / 2.0f;
 float lastY = SCREEN_HEIGHT / 2.0f;
-bool mouseLock = true;
 
 /* Delta time */
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
-
-/* Initialise objects */
-Camera camera;
-
 
 int main()
 {
@@ -107,7 +102,7 @@ int main()
     Shader shader = ResourceManager::getShader(1);
     ResourceManager::currentShader = ResourceManager::getShader(1);
 
-    std::cout << "Current shader ID is" << ResourceManager::currentShader.ID << std::endl;
+    std::cout << "Current shader ID is " << ResourceManager::currentShader.ID << std::endl;
 
     /* Load Texture */
     unsigned int texture1 {0};
@@ -143,10 +138,10 @@ int main()
         ResourceManager::currentShader.use();
 
         //get view and projection matrices and send to shader class
-        glm::mat4 view = camera.getViewMatrix();
+        glm::mat4 view = Camera::getViewMatrix();
         ResourceManager::currentShader.setMat4("view", view);
 
-        glm::mat4 projection = camera.getProjectionMatrix(SCREEN_WIDTH, SCREEN_HEIGHT);
+        glm::mat4 projection = Camera::getProjectionMatrix(SCREEN_WIDTH, SCREEN_HEIGHT);
         ResourceManager::currentShader.setMat4("projection", projection);
 
         // render gemetry
@@ -186,24 +181,24 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    camera.speed = DEFAULT_SPEED * deltaTime;
+    Camera::speed = Camera::DEFAULT_SPEED * deltaTime;
 
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) // double movement speed while left shift is held down
-        camera.speed = camera.speed * 2;
+        Camera::speed = Camera::speed * 2;
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) // forwards
-        camera.positionVec += camera.speed * camera.directionVec;
+        Camera::positionVec += Camera::speed * Camera::directionVec;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) // back
-        camera.positionVec -= camera.speed * camera.directionVec;
+        Camera::positionVec -= Camera::speed * Camera::directionVec;
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) // left
-        camera.positionVec -= glm::normalize(glm::cross(camera.directionVec, camera.upVec)) * camera.speed;
+        Camera::positionVec -= glm::normalize(glm::cross(Camera::directionVec, Camera::upVec)) * Camera::speed;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) // right
-        camera.positionVec += glm::normalize(glm::cross(camera.directionVec, camera.upVec)) * camera.speed;
+        Camera::positionVec += glm::normalize(glm::cross(Camera::directionVec, Camera::upVec)) * Camera::speed;
 
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) // up
-        camera.positionVec += camera.upVec * camera.speed;
+        Camera::positionVec += Camera::upVec * Camera::speed;
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) // down
-        camera.positionVec -= camera.upVec * camera.speed;
+        Camera::positionVec -= Camera::upVec * Camera::speed;
 }
 
 /* Callback function called when mouse is moved */
@@ -212,7 +207,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
 
-    if (!camera.mouselock) // prevents movement
+    if (!Camera::mouselock) // prevents movement
     {
         lastX = xpos;
         lastY = ypos;
@@ -231,22 +226,22 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
     lastX = xpos;
     lastY = ypos;
 
-    camera.processMouse(xoffset, yoffset);
+    Camera::processMouse(xoffset, yoffset);
 }
 
 /* Callback function called when a mouse button is pressed */
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
-        if (camera.mouselock == true)
+        if (Camera::mouselock == true)
         {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-            camera.mouselock = false;
+            Camera::mouselock = false;
         }
         else
         {
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-            camera.mouselock = true;
+            Camera::mouselock = true;
         }
 }
 

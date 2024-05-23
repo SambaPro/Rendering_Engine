@@ -7,50 +7,39 @@
 
 #include <iostream>
 
-// default camera settings
-const glm::vec3 INITIAL_CAM_POSITION = glm::vec3(0.0f, 0.0f, 5.0f);
-const glm::vec3 INITIAL_FRONT_VECTOR = glm::vec3(0.0f, 0.0f, -1.0f);
-const float SENSITIVITY = 0.05f;
-const float DEFAULT_SPEED = 3.0f;
 
 class Camera {
 public:
-	bool mouselock;
-	glm::vec3 positionVec; // initial camera position
-	glm::vec3 directionVec;    // camera direction
-	glm::vec3 upVec;       // up vector
-	float pitch;
-	float yaw;
-	float speed;
-	float fov;
+	// Initial Values
+	static glm::vec3 INITIAL_CAM_POSITION;
+	static glm::vec3 INITIAL_FRONT_VECTOR;
+	static float SENSITIVITY;
+	static float DEFAULT_SPEED;
 
-	/* Constructor */
-	Camera(glm::vec3 positionvec = INITIAL_CAM_POSITION, glm::vec3 directionvec = INITIAL_FRONT_VECTOR, glm::vec3 upvec = glm::vec3(0.0f, 1.0f, 0.0f), float Pitch = 0.0f, float Yaw = -90.0f, float Speed = DEFAULT_SPEED, float Fov = 45.0f)
-	{
-		mouselock = true;
-		positionVec = positionvec;
-		directionVec = directionvec;
-		upVec = upvec;
-		pitch = Pitch;
-		yaw = Yaw;
-		speed = Speed;
-		fov = Fov;
-	};
+	// Camera Values
+	static bool mouselock;
+	static glm::vec3 positionVec;
+	static glm::vec3 directionVec;
+	static glm::vec3 upVec;
+	static float pitch;
+	static float yaw;
+	static float speed;
+	static float fov;
+	
 
-
-	glm::mat4 getViewMatrix()
+	static glm::mat4 getViewMatrix()
 	{
 		return glm::lookAt(positionVec, positionVec + directionVec, upVec);
 	};
 
 
-	glm::mat4 getProjectionMatrix(float SCR_WIDTH, float SCR_HEIGHT)
+	static glm::mat4 getProjectionMatrix(float SCR_WIDTH, float SCR_HEIGHT)
 	{
 		return glm::perspective(glm::radians(fov), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 	};
 
 
-	void processMouse(float xoffset, float yoffset)
+	static void processMouse(float xoffset, float yoffset)
 	{
 		//std::cout << "Processing Mouse" << std::endl;
 		xoffset *= SENSITIVITY;
@@ -72,6 +61,15 @@ public:
 		front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 		directionVec = glm::normalize(front);
 	};
+
+	static void printCamera()
+	{
+		std::cout << "Position Vec: " << Camera::positionVec.x << Camera::positionVec.y << Camera::positionVec.z << std::endl;
+	};
+
+private:
+	Camera() {};
+
 };
 
 #endif
