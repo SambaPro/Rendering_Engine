@@ -18,7 +18,6 @@
 class Model
 {
 public:
-	//std::vector<Texture> loaded_textures;
 	std::vector<Mesh> meshes;
 	std::string directory;
 
@@ -76,11 +75,11 @@ private:
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
 
-		/* Loop through mesh vertices*/
+		// Loop through mesh vertices
 		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 		{
 			Vertex vertex{};
-			/* Process Vertex Vectors */
+			// Process Vertex Vectors
 			glm::vec3 vector {};
 			vector.x = mesh->mVertices[i].x;
 			vector.y = mesh->mVertices[i].y;
@@ -89,7 +88,7 @@ private:
 
 			if (mesh->HasNormals())
 			{
-				/* Process Normal Vectors*/
+				// Process Normal Vectors
 				vector.x = mesh->mNormals[i].x;
 				vector.y = mesh->mNormals[i].y;
 				vector.z = mesh->mNormals[i].z;
@@ -105,7 +104,7 @@ private:
 				vertex.normalVec = vector;
 			}
 
-			/* Process Texture Coordinates */
+			// Process Texture Coordinates
 			if (mesh->mTextureCoords[0])
 			{
 				glm::vec2 vec2 {};
@@ -120,7 +119,7 @@ private:
 				vertex.textureCoordinates = glm::vec2(0.0f, 0.0f);
 		}
 
-		/* Process Indicies */
+		// Process Indicies
 		for (unsigned int i = 0; i < mesh->mNumFaces; i++)
 		{
 			aiFace face = mesh->mFaces[i];

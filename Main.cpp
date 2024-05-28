@@ -15,6 +15,7 @@
 #include "camera.h"
 #include "shader.h"
 #include "model.h"
+#include "texture.h"
 #include "resource_manager.h"
 
 
@@ -22,9 +23,9 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn);
-void load_texture(const char* path, unsigned int textureID);
 void load_models();
 void load_shaders();
+void load_textures();
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 glm::mat4 scale_world(glm::mat4 model, float factor);
 void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVec4 clear_color);
@@ -89,24 +90,13 @@ int main()
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
   
-
     // Flip Textures
     stbi_set_flip_vertically_on_load(true);
-
 
     // Load Resources
     load_models();
     load_shaders();
-    //load_textures();
-
-    // Load Textures
-    unsigned int texture1 {0};
-    load_texture("src/assets/cube/default.png", texture1);
- 
-
-    // Activate Shader and Texure
-    ResourceManager::currentShader.use();
-    glUniform1i(glGetUniformLocation(ResourceManager::currentShader.ID, "texture1"), 0);
+    load_textures();
 
 
     // Main Loop
@@ -256,30 +246,12 @@ void load_shaders()
     ResourceManager::currentShader = ResourceManager::getShader(1);
 }
 
-void load_texture(const char* path, unsigned int textureID)
+void load_textures()
 {
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true); // flip image
-    unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
+    Texture brick_texture = Texture("src/assets/brick.jpg");
+    ResourceManager::loadTexture(brick_texture);
+    Texture cube_default_texture = Texture("src/assets/cube/default.png");
+    ResourceManager::loadTexture(cube_default_texture);
 }
 
 
@@ -337,6 +309,22 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
         std::cout << "Changing shader to Colour" << std::endl;
         ResourceManager::currentShader = ResourceManager::getShader(0);
     } 
+
+
+    ImGui::Text("Change Texture");
+    if (ImGui::Button("Default"))
+    {
+        std::cout << "Changing shader to Default" << std::endl;
+        ResourceManager::currentTexture = ResourceManager::getTexture(0);
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Brick"))
+    {
+        std::cout << "Changing shader to Brick" << std::endl;
+        ResourceManager::currentTexture = ResourceManager::getTexture(1);
+    }
 
 
     /*
