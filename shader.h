@@ -13,7 +13,7 @@ class Shader
 {
 public:
     unsigned int ID;
-    /* Constructor */
+    // Constructors
     Shader() {};
     Shader(const char* vertexPath, const char* fragmentPath)
     {
@@ -30,13 +30,13 @@ public:
             vShaderFile.open(vertexPath);
             fShaderFile.open(fragmentPath);
             std::stringstream vShaderStream, fShaderStream;
-            /* Read buffer */
+            // Read buffer
             vShaderStream << vShaderFile.rdbuf();
             fShaderStream << fShaderFile.rdbuf();
-            /* Close File Handlers */
+            // Close File Handlers
             vShaderFile.close();
             fShaderFile.close();
-            /* Convert stream into string */
+            // Convert stream into string
             vertexCode = vShaderStream.str();
             fragmentCode = fShaderStream.str();
         }
@@ -49,19 +49,19 @@ public:
 
         unsigned int vertex, fragment;
 
-        /* Vertex Shader */
+        // Vertex Shader
         vertex = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex, 1, &vShaderCode, NULL);
         glCompileShader(vertex);
         checkCompileErrors(vertex, "VERTEX");
 
-        /* Fragment Shader */
+        // Fragment Shader
         fragment = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragment, 1, &fShaderCode, NULL);
         glCompileShader(fragment);
         checkCompileErrors(fragment, "FRAGMENT");
 
-        /* Create shader program */
+        // Create shader program
         ID = glCreateProgram();
         glAttachShader(ID, vertex);
         glAttachShader(ID, fragment);
@@ -73,13 +73,13 @@ public:
 
     }
     
-    /* Activate Shader */
+    // Activate Shader
     void use() const
     {
         glUseProgram(ID);
     }
 
-    /* Uniform Functions */
+    // Uniform Functions
     void setBool(const std::string& name, bool value) const
     {
         glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);

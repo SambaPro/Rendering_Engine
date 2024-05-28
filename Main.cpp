@@ -12,45 +12,47 @@
 
 #include <iostream>
 
-
 #include "camera.h"
 #include "shader.h"
 #include "model.h"
 #include "resource_manager.h"
 
 
-/* Declare functions */
+// Declare functions
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 void mouse_callback(GLFWwindow* window, double xposIn, double yposIn);
 void load_texture(const char* path, unsigned int textureID);
+void load_models();
+void load_shaders();
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 glm::mat4 scale_world(glm::mat4 model, float factor);
 void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVec4 clear_color);
 
-/* Settings */
+// Settings
 const unsigned int SCREEN_WIDTH = 800;
 const unsigned int SCREEN_HEIGHT = 600;
-bool scale = false;
+float scale = 4.0;
+glm::vec3 trans = glm::vec3(0.0f, 0.0f, 0.0f);
 
-/* Initial mouse settings */
+// Initial mouse settings
 bool initialMouse = true;
 float lastX = SCREEN_WIDTH / 2.0f;
 float lastY = SCREEN_HEIGHT / 2.0f;
 
-/* Delta time */
+// Delta time
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
 
 int main()
 {
-    /* GLFW setup */
+    // GLFW setup
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    /* Create glfw window */
+    // Create glfw window
     GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Graphical Engine", NULL, NULL);
     if (!window)
     {
@@ -73,10 +75,10 @@ int main()
         return -1;
     }
 
-    /* Enable depth rendering */
+    // Enable depth rendering
     glEnable(GL_DEPTH_TEST);
 
-    /* ImGui setup */
+    // ImGui setup
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     ImGui::StyleColorsDark();
@@ -88,53 +90,37 @@ int main()
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
   
 
-    /* Flip Textures */
+    // Flip Textures
     stbi_set_flip_vertically_on_load(true);
 
 
-    /* Load Models */
-    Model cubeModel("src/assets/cube/cube.obj");
-    Model teapotModel("src/assets/teapot.obj");
-    ResourceManager::loadModel(cubeModel); // 0
-    ResourceManager::loadModel(teapotModel); // 1
-    ResourceManager::currentModel = ResourceManager::getModel(0);
-    
+    // Load Resources
+    load_models();
+    load_shaders();
+    //load_textures();
 
-    /* Load Shaders */
-    Shader colShader("src/shaders/vertex_shader.vs", "src/shaders/colour_shader.fs");
-    Shader texshader("src/shaders/vertex_shader.vs", "src/shaders/texture_shader.fs");
-    ResourceManager::loadShader(colShader); // 0
-    ResourceManager::loadShader(texshader); // 1
-    ResourceManager::currentShader = ResourceManager::getShader(1);
-
-    //std::cout << "Current shader ID is " << ResourceManager::currentShader.ID << std::endl;
-
-    /* Load Texture */
+    // Load Textures
     unsigned int texture1 {0};
     load_texture("src/assets/cube/default.png", texture1);
  
 
-    /* Activate Shader and Texure */
+    // Activate Shader and Texure
     ResourceManager::currentShader.use();
     glUniform1i(glGetUniformLocation(ResourceManager::currentShader.ID, "texture1"), 0);
 
 
-    /* loop  until user closes window */
+    // Main Loop
     while (!glfwWindowShouldClose(window))
     {
-        //shader = texShader;
-
-
         // delta time
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        /* Allow input */
         processInput(window);
 
 
-        /* Clear Buffers */
+        // Clear Buffers
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -151,16 +137,12 @@ int main()
 
         // render gemetry
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // centre model
-        
-        if (scale == true)
-            model = scale_world(model, 0.1);
+        model = glm::translate(model, trans); // centre model
+        model = scale_world(model, scale);
 
-        else
-            model = scale_world(model, 4);
 
         ResourceManager::currentShader.setMat4("model", model);
-        ResourceManager::currentModel.drawModel(ResourceManager::currentShader);
+        ResourceManager::currentModel.drawModel();
 
 
         /* ImuGUI */
@@ -256,6 +238,24 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
         }
 }
 
+void load_models()
+{
+    Model cubeModel("src/assets/cube/cube.obj");
+    Model teapotModel("src/assets/teapot.obj");
+    ResourceManager::loadModel(cubeModel); // 0
+    ResourceManager::loadModel(teapotModel); // 1
+    ResourceManager::currentModel = ResourceManager::getModel(0);
+}
+
+void load_shaders()
+{
+    Shader colShader("src/shaders/vertex_shader.vs", "src/shaders/colour_shader.fs");
+    Shader texshader("src/shaders/vertex_shader.vs", "src/shaders/texture_shader.fs");
+    ResourceManager::loadShader(colShader); // 0
+    ResourceManager::loadShader(texshader); // 1
+    ResourceManager::currentShader = ResourceManager::getShader(1);
+}
+
 void load_texture(const char* path, unsigned int textureID)
 {
     glGenTextures(1, &textureID);
@@ -307,7 +307,8 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
     if (ImGui::Button("Cube"))
     {
         std::cout << "Changing model to Cube" << std::endl;
-        scale = false;
+        scale = 4.0;
+        trans = glm::vec3(0.0f, 0.0f, 0.0f);
         ResourceManager::currentModel = ResourceManager::getModel(0);
     }
 
@@ -316,7 +317,8 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
     if (ImGui::Button("Teapot"))
     {
         std::cout << "Changing model to Teapotd" << std::endl;
-        scale = true;
+        scale = 0.06;
+        trans = glm::vec3(0.0f, -2.0f, 0.0f);
         ResourceManager::currentModel = ResourceManager::getModel(1);
     }
 

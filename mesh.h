@@ -37,11 +37,8 @@ public:
 	};
 
 
-	void drawMesh(Shader& shader)
+	void drawMesh()
 	{
-		unsigned int diffuseNr = 1;
-		unsigned int specularNr = 1;
-
 		glActiveTexture(GL_TEXTURE0);
 
 		/* Draw Mesh */
