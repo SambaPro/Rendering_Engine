@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 #include "texture.h"
 #include "shader.h"
@@ -11,54 +12,49 @@
 class ResourceManager
 {
 public:
-	static std::vector<Shader> Shaders;
-	static std::vector<Texture> Textures;
-	static std::vector<Model> Models;
+	static std::map<std::string, Shader> Shaders;
+	static std::map<std::string, Texture> Textures;
+	static std::map<std::string, Model> Models;
 
 	static Shader currentShader;
 	static Model currentModel;
 	static Texture currentTexture;
 
-	static void loadShader(Shader shader)
+	static void loadShader(std::string name, Shader shader)
 	{
-		Shaders.push_back(shader);
-		std::cout << Shaders.back().ID;
-		std::cout << "Shader loaded successfully" << std::endl;
+		Shaders[name] = shader;
+		std::cout << "Shader ID: " << Shaders[name].ID << " loaded successfully" << std::endl;
 	}
 
-	static Shader getShader(int index)
+	static Shader getShader(std::string name)
 	{
-		return Shaders[index];
+		return Shaders[name];
 	}
 
 
-	static void loadModel(Model model)
+	static void loadModel(std::string name, Model model)
 	{
-		Models.push_back(model);
+		Models[name] = model;
 		std::cout << "Model loaded successfully" << std::endl;
 	}
 
-	static Model getModel(int index)
+	static Model getModel(std::string name)
 	{
-		return Models[index];
+		return Models[name];
 	}
 
 
-	static void loadTexture(Texture texture)
+	static void loadTexture(std::string name, Texture texture)
 	{
-		Textures.push_back(texture);
-		std::cout << "Texture loaded successfully" << std::endl;
+		Textures[name] = texture;
+		std::cout << "Texture ID: " << Textures[name].ID << " loaded successfully" << std::endl;
 	}
 
-	static Texture getTexture(int index)
+	static Texture getTexture(std::string name)
 	{
-		return Textures[index];
+		return Textures[name];
 	}
 
-	static void changeTexture(int index)
-	{
-
-	}
 
 
 private:

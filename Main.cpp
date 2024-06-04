@@ -232,27 +232,29 @@ void load_models()
 {
     Model cubeModel("src/assets/cube/cube.obj");
     Model teapotModel("src/assets/teapot.obj");
-    ResourceManager::loadModel(cubeModel); // 0
-    ResourceManager::loadModel(teapotModel); // 1
-    ResourceManager::currentModel = ResourceManager::getModel(0);
+    ResourceManager::loadModel("cubeModel", cubeModel);
+    ResourceManager::loadModel("teapotModel", teapotModel);
+    ResourceManager::currentModel = ResourceManager::getModel("cubeModel");
 }
 
 void load_shaders()
 {
     Shader colShader("src/shaders/vertex_shader.vs", "src/shaders/colour_shader.fs");
     Shader texshader("src/shaders/vertex_shader.vs", "src/shaders/texture_shader.fs");
-    ResourceManager::loadShader(colShader); // 0
-    ResourceManager::loadShader(texshader); // 1
-    ResourceManager::currentShader = ResourceManager::getShader(1);
+    ResourceManager::loadShader("colShader", colShader);
+    ResourceManager::loadShader("texShader", texshader);
+    ResourceManager::currentShader = ResourceManager::getShader("texShader");
 }
 
 void load_textures()
 {
     Texture cube_default_texture = Texture("src/assets/cube/default.png");
-    ResourceManager::loadTexture(cube_default_texture); // 0
+    ResourceManager::loadTexture("default", cube_default_texture);
+
     Texture brick_texture = Texture("src/assets/brick.jpg");
-    ResourceManager::loadTexture(brick_texture); // 1
-    ResourceManager::currentTexture = ResourceManager::getTexture(0);
+    ResourceManager::loadTexture("brick", brick_texture); // 1
+
+    ResourceManager::currentTexture = ResourceManager::getTexture("default");
     glBindTexture(GL_TEXTURE_2D, ResourceManager::currentTexture.ID);
 }
 
@@ -280,7 +282,7 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
         std::cout << "Changing model to Cube" << std::endl;
         scale = 4.0;
         trans = glm::vec3(0.0f, 0.0f, 0.0f);
-        ResourceManager::currentModel = ResourceManager::getModel(0);
+        ResourceManager::currentModel = ResourceManager::getModel("cubeModel");
     }
 
     ImGui::SameLine();
@@ -290,7 +292,7 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
         std::cout << "Changing model to Teapotd" << std::endl;
         scale = 0.06;
         trans = glm::vec3(0.0f, -2.0f, 0.0f);
-        ResourceManager::currentModel = ResourceManager::getModel(1);
+        ResourceManager::currentModel = ResourceManager::getModel("teapotModel");
     }
 
 
@@ -298,7 +300,7 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
     if (ImGui::Button("Texture"))
     {
         std::cout << "Changing shader to Texture" << std::endl;
-        ResourceManager::currentShader = ResourceManager::getShader(1);
+        ResourceManager::currentShader = ResourceManager::getShader("texShader");
     }
 
     ImGui::SameLine();
@@ -306,7 +308,7 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
     if (ImGui::Button("Colour"))
     {
         std::cout << "Changing shader to Colour" << std::endl;
-        ResourceManager::currentShader = ResourceManager::getShader(0);
+        ResourceManager::currentShader = ResourceManager::getShader("colShader");
     } 
 
 
@@ -314,7 +316,7 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
     if (ImGui::Button("Default"))
     {
         std::cout << "Changing shader to Default" << std::endl;
-        ResourceManager::currentTexture = ResourceManager::getTexture(0);
+        ResourceManager::currentTexture = ResourceManager::getTexture("default");
         glBindTexture(GL_TEXTURE_2D, ResourceManager::currentTexture.ID);
     }
 
@@ -323,7 +325,7 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
     if (ImGui::Button("Brick"))
     {
         std::cout << "Changing shader to Brick" << std::endl;
-        ResourceManager::currentTexture = ResourceManager::getTexture(1);
+        ResourceManager::currentTexture = ResourceManager::getTexture("brick");
         glBindTexture(GL_TEXTURE_2D, ResourceManager::currentTexture.ID);
     }
 
