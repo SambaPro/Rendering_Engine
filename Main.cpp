@@ -128,7 +128,7 @@ int main()
         // render gemetry
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, trans); // centre model
-        model = scale_world(model, scale);
+        model = scale_world(model, scale);    // scale model
 
 
         ResourceManager::currentShader.setMat4("model", model);
@@ -170,13 +170,13 @@ void processInput(GLFWwindow* window)
         Camera::speed = Camera::speed * 2;
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) // forwards
-        Camera::positionVec += Camera::speed * Camera::directionVec;
+        Camera::positionVec += Camera::speed * Camera::frontVec;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) // back
-        Camera::positionVec -= Camera::speed * Camera::directionVec;
+        Camera::positionVec -= Camera::speed * Camera::frontVec;
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) // left
-        Camera::positionVec -= glm::normalize(glm::cross(Camera::directionVec, Camera::upVec)) * Camera::speed;
+        Camera::positionVec -= glm::normalize(glm::cross(Camera::frontVec, Camera::upVec)) * Camera::speed;
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) // right
-        Camera::positionVec += glm::normalize(glm::cross(Camera::directionVec, Camera::upVec)) * Camera::speed;
+        Camera::positionVec += glm::normalize(glm::cross(Camera::frontVec, Camera::upVec)) * Camera::speed;
 
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) // up
         Camera::positionVec += Camera::upVec * Camera::speed;
@@ -248,10 +248,12 @@ void load_shaders()
 
 void load_textures()
 {
-    Texture brick_texture = Texture("src/assets/brick.jpg");
-    ResourceManager::loadTexture(brick_texture);
     Texture cube_default_texture = Texture("src/assets/cube/default.png");
-    ResourceManager::loadTexture(cube_default_texture);
+    ResourceManager::loadTexture(cube_default_texture); // 0
+    Texture brick_texture = Texture("src/assets/brick.jpg");
+    ResourceManager::loadTexture(brick_texture); // 1
+    ResourceManager::currentTexture = ResourceManager::getTexture(0);
+    glBindTexture(GL_TEXTURE_2D, ResourceManager::currentTexture.ID);
 }
 
 
@@ -268,9 +270,6 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
-
-    static float f = 0.0f;
-    static int counter = 0;
 
     ImGui::Begin("Menu"); // create new window
 
@@ -316,6 +315,7 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
     {
         std::cout << "Changing shader to Default" << std::endl;
         ResourceManager::currentTexture = ResourceManager::getTexture(0);
+        glBindTexture(GL_TEXTURE_2D, ResourceManager::currentTexture.ID);
     }
 
     ImGui::SameLine();
@@ -324,23 +324,9 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
     {
         std::cout << "Changing shader to Brick" << std::endl;
         ResourceManager::currentTexture = ResourceManager::getTexture(1);
+        glBindTexture(GL_TEXTURE_2D, ResourceManager::currentTexture.ID);
     }
 
-
-    /*
-    ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-    ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-    ImGui::Checkbox("Another Window", &show_another_window);
-
-    ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-    ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
-
-    if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-        counter++;
-    ImGui::SameLine();
-    ImGui::Text("counter = %d", counter);
-
-    */
 
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
     ImGui::End();

@@ -11,15 +11,15 @@
 class Camera {
 public:
 	// Initial Values
-	static glm::vec3 INITIAL_CAM_POSITION;
-	static glm::vec3 INITIAL_FRONT_VECTOR;
-	static float SENSITIVITY;
-	static float DEFAULT_SPEED;
+	static const glm::vec3 INITIAL_CAM_POSITION;
+	static const glm::vec3 INITIAL_FRONT_VECTOR;
+	static const float SENSITIVITY;
+	static const float DEFAULT_SPEED;
 
 	// Camera Values
 	static bool mouselock;
 	static glm::vec3 positionVec;
-	static glm::vec3 directionVec;
+	static glm::vec3 frontVec;
 	static glm::vec3 upVec;
 	static float pitch;
 	static float yaw;
@@ -29,7 +29,7 @@ public:
 
 	static glm::mat4 getViewMatrix()
 	{
-		return glm::lookAt(positionVec, positionVec + directionVec, upVec);
+		return glm::lookAt(positionVec, positionVec + frontVec, upVec);
 	};
 
 
@@ -41,14 +41,13 @@ public:
 
 	static void processMouse(float xoffset, float yoffset)
 	{
-		//std::cout << "Processing Mouse" << std::endl;
 		xoffset *= SENSITIVITY;
 		yoffset *= SENSITIVITY;
 
 		yaw += xoffset;
 		pitch += yoffset;
 
-		// prevent flipping when looking striaght up or down
+		// Prevent flipping when looking straight up or down
 		if (pitch > 89.0f)
 			pitch = 89.0f;
 		if (pitch < -89.0f)
@@ -59,13 +58,9 @@ public:
 		front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 		front.y = sin(glm::radians(pitch));
 		front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-		directionVec = glm::normalize(front);
+		frontVec = glm::normalize(front);
 	};
 
-	static void printCamera()
-	{
-		std::cout << "Position Vec: " << Camera::positionVec.x << Camera::positionVec.y << Camera::positionVec.z << std::endl;
-	};
 
 private:
 	Camera() {};

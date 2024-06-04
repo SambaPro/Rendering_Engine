@@ -23,7 +23,7 @@ public:
 	{
 		Shaders.push_back(shader);
 		std::cout << Shaders.back().ID;
-		std::cout << "Shader loaded Successfully" << std::endl;
+		std::cout << "Shader loaded successfully" << std::endl;
 	}
 
 	static Shader getShader(int index)
@@ -35,7 +35,7 @@ public:
 	static void loadModel(Model model)
 	{
 		Models.push_back(model);
-		std::cout << "Model loaded sucessfully" << std::endl;
+		std::cout << "Model loaded successfully" << std::endl;
 	}
 
 	static Model getModel(int index)
@@ -47,8 +47,7 @@ public:
 	static void loadTexture(Texture texture)
 	{
 		Textures.push_back(texture);
-		std::cout << "Texture loaded sucessfully" << std::endl;
-		std::cout << Textures[0].ID << std::endl;
+		std::cout << "Texture loaded successfully" << std::endl;
 	}
 
 	static Texture getTexture(int index)

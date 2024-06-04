@@ -9,13 +9,11 @@
 class Texture
 {
 public:
-	unsigned int ID;
+    unsigned int ID;
 
     Texture() {};
 	Texture(const char* path)
 	{
-        //unsigned int ID;
-
         glGenTextures(1, &ID);
         glBindTexture(GL_TEXTURE_2D, ID);
 
@@ -30,7 +28,7 @@ public:
         unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
         if (data)
         {
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data); // Load image data into texture
             glGenerateMipmap(GL_TEXTURE_2D);
         }
         else
@@ -39,7 +37,7 @@ public:
         }
         stbi_image_free(data);
 
-        std::cout << "ID is:" << ID;
+        std::cout << "Texture loaded with ID: " << ID << std::endl;
 	};
 
 };
