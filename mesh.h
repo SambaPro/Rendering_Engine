@@ -54,11 +54,11 @@ private:
 	{
 		std::cout << "Initialising Mesh" << std::endl;
 		// Create Buffer Objects
-		glGenVertexArrays(1, &VAO); // Vertex Attribute Buffer
+		glGenVertexArrays(1, &VAO); // Vertex Array Object
 		glGenBuffers(1, &VBO);      // Vertex Buffer Object
 		glGenBuffers(1, &EBO);      // Element Buffer Object
 
-		// Bind Buffer Objects
+		// Bind Buffer Objects to Context
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);

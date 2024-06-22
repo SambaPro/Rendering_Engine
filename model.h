@@ -43,7 +43,7 @@ private:
 	void loadModel(std::string path)
 	{
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+		const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_GenSmoothNormals);
 
 		if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 		{
@@ -75,6 +75,11 @@ private:
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
 
+		if (!mesh->HasNormals())
+		{
+			std::cout << "No normals found" << std::endl;
+		}
+
 		// Loop through mesh vertices
 		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 		{
@@ -97,7 +102,6 @@ private:
 
 			else // Generate Normals from faces TODO
 			{
-				//std::cout << "No normals found" << std::endl;
 				vector.x = 0;
 				vector.y = 0;
 				vector.z = 0;

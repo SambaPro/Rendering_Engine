@@ -35,6 +35,7 @@ const unsigned int SCREEN_WIDTH = 800;
 const unsigned int SCREEN_HEIGHT = 600;
 float scale = 4.0;
 glm::vec3 trans = glm::vec3(0.0f, 0.0f, 0.0f);
+bool texture_setting = false;
 
 // Initial mouse settings
 bool initialMouse = true;
@@ -78,6 +79,7 @@ int main()
 
     // Enable depth rendering
     glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_STENCIL_TEST);
 
     // ImGui setup
     ImGui::CreateContext();
@@ -99,6 +101,7 @@ int main()
     load_textures();
 
 
+
     // Main Loop
     while (!glfwWindowShouldClose(window))
     {
@@ -118,7 +121,7 @@ int main()
 
         ResourceManager::currentShader.use();
 
-        //get view and projection matrices and send to shader class
+        // get view and projection matrices and send to shader class
         glm::mat4 view = Camera::getViewMatrix();
         ResourceManager::currentShader.setMat4("view", view);
 
@@ -126,13 +129,21 @@ int main()
         ResourceManager::currentShader.setMat4("projection", projection);
 
         // render gemetry
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, trans); // centre model
+        glm::mat4 model = glm::mat4(1.0f); // identity matrix
+        model = glm::translate(model, trans); // translate model
         model = scale_world(model, scale);    // scale model
-
-
         ResourceManager::currentShader.setMat4("model", model);
+
+        ResourceManager::currentShader.setVec3("viewPos", Camera::positionVec);
+
+
+        // Change light position
+        //double time = glfwGetTime();
+        //ResourceManager::currentShader.setVec3("lightPos", glm::vec3(10 * glm::cos(time), 10 * glm::sin(time), 10 * glm::sin(time)));
+
+        // Draw model
         ResourceManager::currentModel.drawModel();
+
 
 
         /* ImuGUI */
@@ -232,18 +243,32 @@ void load_models()
 {
     Model cubeModel("src/assets/cube/cube.obj");
     Model teapotModel("src/assets/teapot.obj");
+    Model spiderModel("src/assets/spider.obj");
     ResourceManager::loadModel("cubeModel", cubeModel);
     ResourceManager::loadModel("teapotModel", teapotModel);
+    ResourceManager::loadModel("spiderModel", spiderModel);
     ResourceManager::currentModel = ResourceManager::getModel("cubeModel");
 }
 
 void load_shaders()
 {
-    Shader colShader("src/shaders/vertex_shader.vs", "src/shaders/colour_shader.fs");
-    Shader texshader("src/shaders/vertex_shader.vs", "src/shaders/texture_shader.fs");
-    ResourceManager::loadShader("colShader", colShader);
-    ResourceManager::loadShader("texShader", texshader);
-    ResourceManager::currentShader = ResourceManager::getShader("texShader");
+    Shader phongShader("src/shaders/vertex_shader.vs", "src/shaders/phong_shader.fs");
+    Shader defaultShader("src/shaders/vertex_shader.vs", "src/shaders/default_shader.fs");
+    ResourceManager::loadShader("phongShader", phongShader);
+    ResourceManager::loadShader("defaultShader", defaultShader);
+
+    // load phong shader
+    ResourceManager::currentShader = ResourceManager::getShader("phongShader");
+    ResourceManager::currentShader.use();
+    ResourceManager::currentShader.setVec3("objectColour", glm::vec3(1.0f, 0.5f, 0.0f));
+    ResourceManager::currentShader.setVec3("lightPos", glm::vec3(100.0f, 100.0f, 100.0f)); // Position vector of light source
+    ResourceManager::currentShader.setVec3("ambientColour", glm::vec3(1.0f, 1.0f, 1.0f));  // Colour of ambient light
+
+    // load default shader
+    ResourceManager::currentShader = ResourceManager::getShader("defaultShader");
+    ResourceManager::currentShader.use();
+    ResourceManager::currentShader.setVec3("objectColour", glm::vec3(1.0f, 0.5f, 0.0f));
+
 }
 
 void load_textures()
@@ -252,7 +277,7 @@ void load_textures()
     ResourceManager::loadTexture("default", cube_default_texture);
 
     Texture brick_texture = Texture("src/assets/brick.jpg");
-    ResourceManager::loadTexture("brick", brick_texture); // 1
+    ResourceManager::loadTexture("brick", brick_texture);
 
     ResourceManager::currentTexture = ResourceManager::getTexture("default");
     glBindTexture(GL_TEXTURE_2D, ResourceManager::currentTexture.ID);
@@ -289,45 +314,69 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
 
     if (ImGui::Button("Teapot"))
     {
-        std::cout << "Changing model to Teapotd" << std::endl;
+        std::cout << "Changing model to Teapot" << std::endl;
         scale = 0.06;
         trans = glm::vec3(0.0f, -2.0f, 0.0f);
         ResourceManager::currentModel = ResourceManager::getModel("teapotModel");
     }
 
+    ImGui::SameLine();
+
+    if (ImGui::Button("Spider"))
+    {
+        std::cout << "Changing model to Spider" << std::endl;
+        scale = 0.06;
+        trans = glm::vec3(0.0f, 0.0f, 0.0f);
+        ResourceManager::currentModel = ResourceManager::getModel("spiderModel");
+    }
+
 
     ImGui::Text("Change Shader");
-    if (ImGui::Button("Texture"))
+    if (ImGui::Button("Default"))
     {
         std::cout << "Changing shader to Texture" << std::endl;
-        ResourceManager::currentShader = ResourceManager::getShader("texShader");
+        ResourceManager::currentShader = ResourceManager::getShader("defaultShader");
     }
 
     ImGui::SameLine();
 
-    if (ImGui::Button("Colour"))
+    if (ImGui::Button("Phong"))
     {
-        std::cout << "Changing shader to Colour" << std::endl;
-        ResourceManager::currentShader = ResourceManager::getShader("colShader");
+        std::cout << "Changing shader to Phong" << std::endl;
+        ResourceManager::currentShader = ResourceManager::getShader("phongShader");
     } 
 
 
     ImGui::Text("Change Texture");
-    if (ImGui::Button("Default"))
+
+    if (ImGui::Button("Colour"))
     {
-        std::cout << "Changing shader to Default" << std::endl;
+        std::cout << "Changing T=texture to Colour" << std::endl;
+        ResourceManager::currentShader.setBool("texture_setting", false);
+        //ResourceManager::currentTexture = ResourceManager::getTexture("default");
+        //glBindTexture(GL_TEXTURE_2D, ResourceManager::currentTexture.ID);
+        
+    } 
+    ImGui::SameLine();
+
+    if (ImGui::Button("Default Texture"))
+    {
+        std::cout << "Changing texture to default" << std::endl;
+        ResourceManager::currentShader.setBool("texture_setting", true);
         ResourceManager::currentTexture = ResourceManager::getTexture("default");
         glBindTexture(GL_TEXTURE_2D, ResourceManager::currentTexture.ID);
-    }
-
+    } 
     ImGui::SameLine();
 
     if (ImGui::Button("Brick"))
     {
-        std::cout << "Changing shader to Brick" << std::endl;
+        std::cout << "Changing texture to Brick" << std::endl;
+        ResourceManager::currentShader.setBool("texture_setting", true);
         ResourceManager::currentTexture = ResourceManager::getTexture("brick");
         glBindTexture(GL_TEXTURE_2D, ResourceManager::currentTexture.ID);
     }
+
+
 
 
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
