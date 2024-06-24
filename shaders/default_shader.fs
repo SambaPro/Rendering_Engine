@@ -1,7 +1,8 @@
 #version 430 core
 
-in vec2 textureCoordinates;
 out vec4 FragColour;
+
+in vec2 textureCoordinates;
 
 uniform sampler2D texture1;
 uniform bool texture_setting;

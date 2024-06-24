@@ -55,10 +55,11 @@ public:
 		return Textures[name];
 	}
 
-
-
-private:
-	ResourceManager() { }
+	static void initialise()
+	{
+		//TODO put loading into here
+		return;
+	}
 };
 
 #endif

@@ -12,11 +12,11 @@
 
 #include <iostream>
 
+#include "resource_manager.h"
 #include "camera.h"
 #include "shader.h"
 #include "model.h"
 #include "texture.h"
-#include "resource_manager.h"
 
 
 // Declare functions
@@ -96,6 +96,7 @@ int main()
     stbi_set_flip_vertically_on_load(true);
 
     // Load Resources
+    //ResourceManager::initialise();
     load_models();
     load_shaders();
     load_textures();
@@ -138,8 +139,8 @@ int main()
 
 
         // Change light position
-        //double time = glfwGetTime();
-        //ResourceManager::currentShader.setVec3("lightPos", glm::vec3(10 * glm::cos(time), 10 * glm::sin(time), 10 * glm::sin(time)));
+        double time = glfwGetTime();
+        ResourceManager::currentShader.setVec3("light.pos", glm::vec3(10 * glm::cos(time), 10 * glm::sin(time), 0.0f));
 
         // Draw model
         ResourceManager::currentModel.drawModel();
@@ -257,17 +258,25 @@ void load_shaders()
     ResourceManager::loadShader("phongShader", phongShader);
     ResourceManager::loadShader("defaultShader", defaultShader);
 
+    //TODO UNIFORM BUFFER
+
     // load phong shader
     ResourceManager::currentShader = ResourceManager::getShader("phongShader");
     ResourceManager::currentShader.use();
     ResourceManager::currentShader.setVec3("objectColour", glm::vec3(1.0f, 0.5f, 0.0f));
-    ResourceManager::currentShader.setVec3("lightPos", glm::vec3(100.0f, 100.0f, 100.0f)); // Position vector of light source
-    ResourceManager::currentShader.setVec3("ambientColour", glm::vec3(1.0f, 1.0f, 1.0f));  // Colour of ambient light
+
+    // load light source
+    ResourceManager::currentShader.setVec3("light.pos", glm::vec3(100.0f, 100.0f, 100.0f)); // Position vector of light source
+    ResourceManager::currentShader.setVec3("light.colour", glm::vec3(1.0f, 1.0f, 1.0f));    // Colour of ambient light
+    ResourceManager::currentShader.setFloat("light.ambientAlbedo", 0.5f);                   // Intensity of ambient light
+    ResourceManager::currentShader.setFloat("light.diffuseAlbedo", 0.5f);                   // Intensity of diffuse light
+    ResourceManager::currentShader.setFloat("light.specularAlbedo", 0.5f);                  // Intensity of specular light
 
     // load default shader
     ResourceManager::currentShader = ResourceManager::getShader("defaultShader");
     ResourceManager::currentShader.use();
     ResourceManager::currentShader.setVec3("objectColour", glm::vec3(1.0f, 0.5f, 0.0f));
+
 
 }
 
@@ -315,7 +324,7 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
     if (ImGui::Button("Teapot"))
     {
         std::cout << "Changing model to Teapot" << std::endl;
-        scale = 0.06;
+        scale = 0.06f;
         trans = glm::vec3(0.0f, -2.0f, 0.0f);
         ResourceManager::currentModel = ResourceManager::getModel("teapotModel");
     }
@@ -325,7 +334,7 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
     if (ImGui::Button("Spider"))
     {
         std::cout << "Changing model to Spider" << std::endl;
-        scale = 0.06;
+        scale = 0.06f;
         trans = glm::vec3(0.0f, 0.0f, 0.0f);
         ResourceManager::currentModel = ResourceManager::getModel("spiderModel");
     }

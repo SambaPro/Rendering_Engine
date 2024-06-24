@@ -1,6 +1,15 @@
 #version 430 core
 
-out vec4 outputColour;
+out vec4 fragColour;
+
+struct Light
+{
+	vec3 pos;
+	vec3 colour;
+	float ambientAlbedo;
+	float diffuseAlbedo;
+	float specularAlbedo;
+};
 
 in vec3 FragPos;
 in vec3 Normal;
@@ -9,43 +18,37 @@ in vec2 textureCoordinates;
 uniform sampler2D texture1;
 uniform bool texture_setting;
 uniform vec3 objectColour;
-
-uniform vec3 lightPos;
-uniform vec3 ambientColour;
 uniform vec3 viewPos;
 
 
+uniform Light light;
 
 void main()
 {
 	vec3 NormalUnitVec = normalize(Normal);        // Normalised normal vectors
-	vec3 lightDir = normalize(lightPos - FragPos); // Normalised light direction (optimisation)
+	vec3 lightDir = normalize(light.pos - FragPos); // Normalised light direction (optimisation)
 
-	// Ambient
-	vec3 lightColour = vec3(1.0f, 1.0f, 1.0f);
-	float ambientAlbedo = 0.5f;
 
 	// Diffuse
 	float diff = max(dot(NormalUnitVec, lightDir), 0.0);
-	float diffuseAlbedo = 0.5f;
-	vec3 diffuse = diff * diffuseAlbedo * lightColour;
+	vec3 diffuse = diff * light.diffuseAlbedo * light.colour;
 
 	// Specular
-	float specularAlbedo = 0.5f;
-	float shininess = 128.0f;
+	//float specularAlbedo = 0.5f;
+	float shininess = 64.0f;
 	vec3 viewDir = normalize(viewPos - FragPos);
 	vec3 reflectDir = reflect(-lightDir, Normal);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
-	vec3 specular = specularAlbedo * spec * lightColour;
+	vec3 specular = light.specularAlbedo * spec * light.colour;
 
 	if (texture_setting)
 	{
 		vec3 colour = texture(texture1, textureCoordinates).rgb;
-		outputColour = vec4((ambientColour * ambientAlbedo + diffuse + specular) * colour, 1.0f);
+		fragColour = vec4((light.colour * light.ambientAlbedo + diffuse + specular) * colour, 1.0f);
 	}
 
 	else
 	{
-		outputColour = vec4((ambientColour * ambientAlbedo + diffuse + specular) * objectColour, 1.0f);
+		fragColour = vec4((light.colour * light.ambientAlbedo + diffuse + specular) * objectColour, 1.0f);
 	}
 }
