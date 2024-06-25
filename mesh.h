@@ -33,7 +33,16 @@ public:
 		vertices = Vertices;
 		indices = Indices;
 
-		initialiseMesh();
+		if (Vertices.size() > 0)
+		{
+			initialiseMesh();
+		}
+
+		else
+		{
+			std::cout << "Failed to load mesh, no vertices to load" << std::endl;
+		}
+		
 	};
 
 
@@ -52,7 +61,7 @@ private:
 
 	void initialiseMesh()
 	{
-		std::cout << "Initialising Mesh" << std::endl;
+		std::cout << "Initialising Mesh with vertices:" << vertices.size() << std::endl;
 		// Create Buffer Objects
 		glGenVertexArrays(1, &VAO); // Vertex Array Object
 		glGenBuffers(1, &VBO);      // Vertex Buffer Object

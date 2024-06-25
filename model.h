@@ -57,13 +57,22 @@ private:
 
 	void processNode(aiNode* node, const aiScene* scene)
 	{
-		// process all the node's meshes (if any)
+		// process all the node's meshes
 		for (unsigned int i = 0; i < node->mNumMeshes; i++)
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-			meshes.push_back(processMesh(mesh, scene));
+			try
+			{
+				std::cout << "node->mNumMeshes:" << node->mNumMeshes << std::endl;
+				std::cout << "mNumVertices: " << mesh->mNumVertices << std::endl;
+				meshes.push_back(processMesh(mesh, scene));
+			}
+			catch(...)
+			{
+				std::cout << "Error: Mesh cannot be processed" << std::endl;
+			}
 		}
-		// then do the same for each of its children
+		// process child nodes if any
 		for (unsigned int i = 0; i < node->mNumChildren; i++)
 		{
 			processNode(node->mChildren[i], scene);
@@ -75,10 +84,6 @@ private:
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
 
-		if (!mesh->HasNormals())
-		{
-			std::cout << "No normals found" << std::endl;
-		}
 
 		// Loop through mesh vertices
 		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
@@ -91,20 +96,13 @@ private:
 			vector.z = mesh->mVertices[i].z;
 			vertex.positionVec = vector;
 
+
 			if (mesh->HasNormals())
 			{
 				// Process Normal Vectors
 				vector.x = mesh->mNormals[i].x;
 				vector.y = mesh->mNormals[i].y;
 				vector.z = mesh->mNormals[i].z;
-				vertex.normalVec = vector;
-			}
-
-			else // Generate Normals from faces TODO
-			{
-				vector.x = 0;
-				vector.y = 0;
-				vector.z = 0;
 				vertex.normalVec = vector;
 			}
 
@@ -116,12 +114,14 @@ private:
 				vec2.y = mesh->mTextureCoords[0][i].y;
 				vertex.textureCoordinates = vec2;
 
-				vertices.push_back(vertex);
 			}
 
 			else
 				vertex.textureCoordinates = glm::vec2(0.0f, 0.0f);
+
+			vertices.push_back(vertex);
 		}
+		
 
 		// Process Indicies
 		for (unsigned int i = 0; i < mesh->mNumFaces; i++)

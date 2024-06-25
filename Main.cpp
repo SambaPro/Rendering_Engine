@@ -181,6 +181,14 @@ void processInput(GLFWwindow* window)
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) // double movement speed while left shift is held down
         Camera::speed = Camera::speed * 2;
 
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) // Reset camera position vector
+    {
+        Camera::positionVec = Camera::INITIAL_CAM_POSITION;
+        Camera::frontVec = Camera::INITIAL_FRONT_VECTOR;
+        Camera::pitch = 0.0f;
+        Camera::yaw = -90.0f;
+    }
+
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) // forwards
         Camera::positionVec += Camera::speed * Camera::frontVec;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) // back
@@ -244,10 +252,13 @@ void load_models()
 {
     Model cubeModel("src/assets/cube/cube.obj");
     Model teapotModel("src/assets/teapot.obj");
-    Model spiderModel("src/assets/spider.obj");
+    Model carModel("src/assets/bmw/bmw.obj");
+    Model cowModel("src/assets/cow.obj");
     ResourceManager::loadModel("cubeModel", cubeModel);
     ResourceManager::loadModel("teapotModel", teapotModel);
-    ResourceManager::loadModel("spiderModel", spiderModel);
+    ResourceManager::loadModel("carModel", carModel);
+    ResourceManager::loadModel("cowModel", cowModel);
+
     ResourceManager::currentModel = ResourceManager::getModel("cubeModel");
 }
 
@@ -331,12 +342,22 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
 
     ImGui::SameLine();
 
-    if (ImGui::Button("Spider"))
+    if (ImGui::Button("Car"))
     {
-        std::cout << "Changing model to Spider" << std::endl;
+        std::cout << "Changing model to Car" << std::endl;
         scale = 0.06f;
         trans = glm::vec3(0.0f, 0.0f, 0.0f);
-        ResourceManager::currentModel = ResourceManager::getModel("spiderModel");
+        ResourceManager::currentModel = ResourceManager::getModel("carModel");
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Cow"))
+    {
+        std::cout << "Changing model to Cow" << std::endl;
+        scale = 0.06f;
+        trans = glm::vec3(0.0f, 0.0f, 0.0f);
+        ResourceManager::currentModel = ResourceManager::getModel("cowModel");
     }
 
 
@@ -362,8 +383,6 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
     {
         std::cout << "Changing T=texture to Colour" << std::endl;
         ResourceManager::currentShader.setBool("texture_setting", false);
-        //ResourceManager::currentTexture = ResourceManager::getTexture("default");
-        //glBindTexture(GL_TEXTURE_2D, ResourceManager::currentTexture.ID);
         
     } 
     ImGui::SameLine();
