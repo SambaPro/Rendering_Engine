@@ -15,6 +15,8 @@
 #include "shader.h"
 #include "mesh.h"
 
+//#define MODEL_DEBUG 1;
+
 class Model
 {
 public:
@@ -63,8 +65,11 @@ private:
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 			try
 			{
-				std::cout << "node->mNumMeshes:" << node->mNumMeshes << std::endl;
-				std::cout << "mNumVertices: " << mesh->mNumVertices << std::endl;
+				#if MODEL_DEBUG
+					std::cout << "node->mNumMeshes:" << node->mNumMeshes << std::endl;
+					std::cout << "mNumVertices: " << mesh->mNumVertices << std::endl;
+				#endif
+
 				meshes.push_back(processMesh(mesh, scene));
 			}
 			catch(...)

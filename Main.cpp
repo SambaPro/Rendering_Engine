@@ -36,6 +36,7 @@ const unsigned int SCREEN_HEIGHT = 600;
 float scale = 4.0;
 glm::vec3 trans = glm::vec3(0.0f, 0.0f, 0.0f);
 bool texture_setting = false;
+bool blinn = false;
 
 // Initial mouse settings
 bool initialMouse = true;
@@ -275,6 +276,7 @@ void load_shaders()
     ResourceManager::currentShader = ResourceManager::getShader("phongShader");
     ResourceManager::currentShader.use();
     ResourceManager::currentShader.setVec3("objectColour", glm::vec3(1.0f, 0.5f, 0.0f));
+    ResourceManager::currentShader.setFloat("shininess", 64.0);
 
     // load light source
     ResourceManager::currentShader.setVec3("light.pos", glm::vec3(100.0f, 100.0f, 100.0f)); // Position vector of light source
@@ -345,8 +347,8 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
     if (ImGui::Button("Car"))
     {
         std::cout << "Changing model to Car" << std::endl;
-        scale = 0.06f;
-        trans = glm::vec3(0.0f, 0.0f, 0.0f);
+        scale = 0.025f;
+        trans = glm::vec3(0.0f, -2.0f, 0.0f);
         ResourceManager::currentModel = ResourceManager::getModel("carModel");
     }
 
@@ -355,7 +357,7 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
     if (ImGui::Button("Cow"))
     {
         std::cout << "Changing model to Cow" << std::endl;
-        scale = 0.06f;
+        scale = 0.8f;
         trans = glm::vec3(0.0f, 0.0f, 0.0f);
         ResourceManager::currentModel = ResourceManager::getModel("cowModel");
     }
@@ -374,7 +376,17 @@ void GUI_loop(ImGuiIO& io, bool show_demo_window, bool show_another_window, ImVe
     {
         std::cout << "Changing shader to Phong" << std::endl;
         ResourceManager::currentShader = ResourceManager::getShader("phongShader");
+        ResourceManager::currentShader.setBool("blinn", false);
     } 
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Blinn-Phong"))
+    {
+        std::cout << "Changing shader to Blinn-Phong" << std::endl;
+        ResourceManager::currentShader = ResourceManager::getShader("phongShader");
+        ResourceManager::currentShader.setBool("blinn", true);
+    }
 
 
     ImGui::Text("Change Texture");
