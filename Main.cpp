@@ -20,6 +20,7 @@
 #include "shader.h"
 #include "model.h"
 #include "texture.h"
+#include "light_source.h"
 
 
 // Declare functions
@@ -69,6 +70,9 @@ int main()
     // Load Resources
     ResourceManager::initialise();
 
+    // light source
+    LightSource Light;
+
 
     // Main Loop
     while (!glfwWindowShouldClose(window))
@@ -97,18 +101,29 @@ int main()
         // render gemetry
         glm::mat4 model = glm::mat4(1.0f); // identity matrix
         model = glm::translate(model, Settings::trans); // translate model
+        //model = glm::translate(model, glm::vec3(100.0f)); // TEMP
         model = glm::scale(model, glm::vec3(Settings::scale)); // scale model
         ResourceManager::currentShader.setMat4("model", model);
 
         ResourceManager::currentShader.setVec3("viewPos", Camera::positionVec);
 
 
+        // ---------------------------------------------------------------
         // Change light position
-        double time = glfwGetTime();
-        ResourceManager::currentShader.setVec3("light.pos", glm::vec3(10 * glm::cos(time), 10 * glm::sin(time), 0.0f));
+        float time = static_cast<float>(glfwGetTime());
+        Light.posVec.x = 10 * glm::sin(time);
+        Light.posVec.y = 2 * glm::sin(time);
+        Light.posVec.z = 10 * glm::cos(time);
+ 
+        //Light.posVec = glm::vec3(0.0f, 0.0f, -10.0f);
+        ResourceManager::currentShader.setVec3("light.pos", Light.posVec.x, Light.posVec.y, Light.posVec.z);
+
+        Light.drawLight(projection, view);
+        
+        //------------------------------------------------------------------
 
         // Draw model
-        ResourceManager::currentModel.drawModel();
+        ResourceManager::currentModel.drawModel(ResourceManager::currentShader);
 
 
         // Render GUI

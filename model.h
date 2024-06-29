@@ -31,8 +31,10 @@ public:
 	}
 
 	/* Draws all meshes in model */
-	void drawModel()
+	void drawModel(Shader shader)
 	{
+		shader.use();
+
 		for (int i = 0; i < meshes.size(); ++i)
 		{
 			meshes[i].drawMesh();

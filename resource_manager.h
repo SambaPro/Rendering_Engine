@@ -32,7 +32,7 @@ public:
 	static Model getModel(std::string name) {return ResourceManager::Models[name];}
 	static Texture getTexture(std::string name) {return ResourceManager::Textures[name];}
 
-	// Load resource
+	// Load resource into manager
 	static void loadShader(std::string name, Shader shader)
 	{
 		ResourceManager::Shaders[name] = shader;
