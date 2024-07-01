@@ -12,8 +12,8 @@
 class LightSource
 {
 public:
-	Shader lightShader;
 
+	bool pointLight;
 	glm::vec3 posVec;
 	float radius;
 
@@ -23,19 +23,19 @@ public:
 	glm::vec3 specularAlbedo;
 
 	// Constructor
-	LightSource()
+	LightSource(Shader shader)
 	{
-		initialise();
+		initialise(shader);
 	}
 
-	void drawLight(glm::mat4 projection, glm::mat4 view)
+	void drawLight(Shader shader, glm::mat4 projection, glm::mat4 view)
 	{
 		
-		lightShader.use();
-		lightShader.setMat4("projection", projection);
-		lightShader.setMat4("view", view);
-		lightShader.setMat4("model", glm::mat4(1.0f));
-		lightShader.setVec3("lightPos", posVec);
+		shader.use();
+		shader.setMat4("projection", projection);
+		shader.setMat4("view", view);
+		shader.setMat4("model", glm::mat4(1.0f));
+		shader.setVec3("lightPos", posVec);
 
 		glPointSize(10);
 
@@ -54,20 +54,14 @@ public:
 		return;
 	}
 
-	void loadLightSource()
-	{
-		return;
-	}
-
 private:
 	unsigned int VAO, VBO;
 
-	void initialise()
+	void initialise(Shader shader)
 	{
-		// Initialise Shader
-		lightShader = Shader("src/shaders/lightsource_shader.vs", "src/shaders/lightsource_shader.fs");
-		lightShader.use();
+		pointLight = true;
 
+		shader.use();
 		glGenVertexArrays(1, &VAO);
 		glGenBuffers(1, &VBO);
 		glBindVertexArray(0);

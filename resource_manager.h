@@ -56,8 +56,10 @@ private:
 	{
 		Shader phongShader("src/shaders/vertex_shader.vs", "src/shaders/phong_shader.fs");
 		Shader defaultShader("src/shaders/vertex_shader.vs", "src/shaders/default_shader.fs");
+		Shader lightShader("src/shaders/lightsource_shader.vs", "src/shaders/lightsource_shader.fs");
 		ResourceManager::loadShader("phongShader", phongShader);
 		ResourceManager::loadShader("defaultShader", defaultShader);
+		ResourceManager::loadShader("lightShader", lightShader);
 
 		//TODO UNIFORM BUFFER
 
@@ -84,11 +86,11 @@ private:
 	{
 		Model cubeModel("src/assets/cube/cube.obj");
 		Model teapotModel("src/assets/teapot.obj");
-		Model carModel("src/assets/bmw/bmw.obj");
+		Model sphereModel("src/assets/sphere.obj");
 		Model cowModel("src/assets/cow.obj");
 		ResourceManager::loadModel("cubeModel", cubeModel);
 		ResourceManager::loadModel("teapotModel", teapotModel);
-		ResourceManager::loadModel("carModel", carModel);
+		ResourceManager::loadModel("sphereModel", sphereModel);
 		ResourceManager::loadModel("cowModel", cowModel);
 
 		ResourceManager::currentModel = ResourceManager::getModel("cubeModel");

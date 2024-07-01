@@ -60,12 +60,12 @@ public:
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Car"))
+        if (ImGui::Button("Sphere"))
         {
-            std::cout << "Changing model to Car" << std::endl;
-            Settings::scale = 0.025f;
-            Settings::trans = glm::vec3(0.0f, -2.0f, 0.0f);
-            ResourceManager::currentModel = ResourceManager::getModel("carModel");
+            std::cout << "Changing model to Sphere" << std::endl;
+            Settings::scale = 1.0f;
+            //Settings::trans = glm::vec3(0.0f, -2.0f, 0.0f);
+            ResourceManager::currentModel = ResourceManager::getModel("sphereModel");
         }
 
         ImGui::SameLine();
