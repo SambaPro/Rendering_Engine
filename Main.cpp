@@ -71,7 +71,7 @@ int main()
     ResourceManager::initialise();
 
     // light source
-    LightSource Light(ResourceManager::getShader("lightShader"));
+    //LightSource Light(ResourceManager::getShader("lightShader"));
 
 
     // Main Loop
@@ -111,12 +111,14 @@ int main()
         // ---------------------------------------------------------------
         // Change light position
         float time = static_cast<float>(glfwGetTime());
+        LightSource& Light = ResourceManager::LightSources[0];
+
         Light.posVec.x = 10 * glm::sin(time);
         Light.posVec.y = 5 * glm::sin(time);
         Light.posVec.z = 10 * glm::cos(time);
  
         //Light.posVec = glm::vec3(0.0f, 0.0f, -10.0f);
-        ResourceManager::currentShader.setVec3("light.pos", Light.posVec.x, Light.posVec.y, Light.posVec.z);
+        ResourceManager::currentShader.setVec3("light.pos", Light.posVec);
 
         Light.drawLight(ResourceManager::getShader("lightShader"), projection, view);
         

@@ -8,6 +8,7 @@
 #include "texture.h"
 #include "shader.h"
 #include "model.h"
+#include "light_source.h"
 
 class ResourceManager
 {
@@ -15,6 +16,7 @@ public:
 	inline static std::map<std::string, Shader> Shaders;
 	inline static std::map<std::string, Texture> Textures;
 	inline static std::map<std::string, Model> Models;
+	inline static std::vector<LightSource> LightSources;
 
 	inline static Shader currentShader;
 	inline static Model currentModel;
@@ -25,6 +27,7 @@ public:
 		initialiseShaders();
 		initialiseModels();
 		initialiseTextures();
+		initialiseLightSources();
 	};
 
 	// Getters
@@ -106,6 +109,12 @@ private:
 
 		ResourceManager::currentTexture = ResourceManager::getTexture("default");
 		glBindTexture(GL_TEXTURE_2D, ResourceManager::currentTexture.ID);
+	}
+
+	static void initialiseLightSources()
+	{
+		LightSources.push_back(LightSource(ResourceManager::getShader("lightShader")));
+		LightSources.push_back(LightSource(ResourceManager::getShader("lightShader")));
 	}
 
 };
