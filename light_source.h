@@ -15,7 +15,6 @@ public:
 
 	bool pointLight;
 	glm::vec3 posVec;
-	float radius;
 
 	glm::vec3 lightColour;
 	glm::vec3 ambientAlbedo;

@@ -14,6 +14,12 @@ public:
     Texture() {};
 	Texture(const char* path)
 	{
+        initialise(path);
+	};
+
+private:
+    void initialise(const char* path)
+    {
         glGenTextures(1, &ID);
         glBindTexture(GL_TEXTURE_2D, ID);
 
@@ -36,8 +42,7 @@ public:
             std::cout << "Failed to load texture" << std::endl;
         }
         stbi_image_free(data);
-	};
-
+    }
 };
 
 #endif

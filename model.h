@@ -21,7 +21,6 @@ class Model
 {
 public:
 	std::vector<Mesh> meshes;
-	std::string directory;
 
 	/* Model Constructor*/
 	Model() {};
@@ -42,7 +41,6 @@ public:
 	}
 
 private:
-	std::string dictionary;
 
 	void loadModel(std::string path)
 	{
@@ -54,7 +52,7 @@ private:
 			std::cout << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
 			return;
 		}
-		directory = path.substr(0, path.find_last_of('/'));
+		std::string directory = path.substr(0, path.find_last_of('/'));
 
 		processNode(scene->mRootNode, scene);
 	};
