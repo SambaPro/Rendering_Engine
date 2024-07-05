@@ -12,8 +12,12 @@
 class LightSource
 {
 public:
-
 	bool pointLight;
+
+	// Direction light properties
+	glm::vec3 dirVec;
+
+	// Point light properties
 	glm::vec3 posVec;
 	glm::vec3 colour;
 

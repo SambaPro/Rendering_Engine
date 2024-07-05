@@ -4,7 +4,9 @@ out vec4 fragColour;
 
 struct Light
 {
-	vec3 pos;
+	bool pointLight;
+	vec3 posVec;
+	vec3 dirVec;
 	vec3 colour;
 };
 
@@ -71,8 +73,11 @@ void main()
 {
 	// Normalise vectors
 	vec3 Normal_N = normalize(Normal);
-	vec3 lightDir_N = normalize(light.pos - FragPos);
+	vec3 lightDir_N = normalize(light.posVec - FragPos);
 	vec3 viewDir = normalize(viewPos - FragPos);
+
+	if (!light.pointLight)
+		lightDir_N = normalize(light.dirVec);
 
 	// Get Lighting Factors
 	vec3 ambient = getAmbient();

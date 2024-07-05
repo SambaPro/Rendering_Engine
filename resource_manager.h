@@ -78,7 +78,7 @@ public:
 		currentShader.setBool("settings.blinn", Settings::blinn);
 
 		// Material Data
-		Material material = ResourceManager::currentMaterial;
+		Material& material = ResourceManager::currentMaterial;
 		currentShader.setVec3("material.colour", material.colour);
 		currentShader.setFloat("material.ambientAlbedo", material.ambientAlbedo);
 		currentShader.setFloat("material.diffuseAlbedo", material.diffuseAlbedo);
@@ -86,9 +86,11 @@ public:
 		currentShader.setFloat("material.shininess", material.shininess);
 
 		// Light Data
-		LightSource light = LightSources[0];
-		//currentShader.setVec3("light.pos", glm::vec3(100.0f, 100.0f, 100.0f)); // Position vector of light source
-		currentShader.setVec3("light.colour", light.colour);    // Colour of ambient light
+		LightSource& light = LightSources[0];
+		currentShader.setVec3("light.posVec", light.posVec);
+		currentShader.setVec3("light.dirVec", light.dirVec);
+		currentShader.setVec3("light.colour", light.colour);
+		currentShader.setBool("light.pointLight", light.pointLight);
 
 	}
 
@@ -138,19 +140,19 @@ private:
 	{
 		LightSource light1(getShader("lightShader"));
 		light1.pointLight = true;
+		light1.dirVec = glm::vec3(0.0f, 0.0f, 10.0f);
 		light1.posVec = glm::vec3(0.0f);
 		light1.colour = glm::vec3(1.0f);
 
 
 		LightSources.push_back(light1);
-		//LightSources.push_back(LightSource(getShader("lightShader")));
 	}
 
 	static void initialiseMaterials()
 	{
 		Material custom;
 		custom.colour = glm::vec3(1.0f, 0.5f, 0.0f);
-		custom.shininess = 64.0f;
+		custom.shininess = 128.0f;
 		custom.ambientAlbedo = 0.5f;
 		custom.diffuseAlbedo = 0.5f;
 		custom.specularAlbedo = 0.5f;

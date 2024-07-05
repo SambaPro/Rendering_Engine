@@ -95,7 +95,7 @@ int main()
         glm::mat4 projection = Camera::getProjectionMatrix(Settings::SCREEN_WIDTH, Settings::SCREEN_HEIGHT);
         ResourceManager::currentShader.setMat4("projection", projection);
 
-        // render gemetry
+        // get model matrix
         glm::mat4 model = glm::mat4(1.0f); // identity matrix
         model = glm::translate(model, Settings::trans); // translate model
         model = glm::scale(model, glm::vec3(Settings::scale)); // scale model
@@ -106,20 +106,20 @@ int main()
         // ------ Light Calculations ---------------------------------------
         // Change light position
         float time = static_cast<float>(glfwGetTime());
-        LightSource Light = ResourceManager::LightSources[0];
+        LightSource& Light = ResourceManager::LightSources[0];
 
         Light.posVec.x = 10 * glm::sin(time);
         Light.posVec.y = 5 * glm::sin(time);
         Light.posVec.z = 10 * glm::cos(time);
- 
-        ResourceManager::currentShader.setVec3("light.pos", Light.posVec);
         //------------------------------------------------------------------
 
         // Update shader data
         ResourceManager::uploadDatatoShader();
 
         // Draw commands
-        Light.drawLight(ResourceManager::getShader("lightShader"), projection, view);
+        if (Light.pointLight == true)
+            Light.drawLight(ResourceManager::getShader("lightShader"), projection, view);
+
         ResourceManager::currentModel.drawModel(ResourceManager::currentShader);
 
         // Render GUI

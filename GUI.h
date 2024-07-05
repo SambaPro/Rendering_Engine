@@ -77,7 +77,7 @@ public:
             ResourceManager::currentModel = ResourceManager::getModel("cowModel");
         }
 
-
+        // Shaders
         ImGui::Text("Change Shader");
         if (ImGui::Button("Default"))
         {
@@ -101,6 +101,29 @@ public:
             std::cout << "Changing shader to Blinn-Phong" << std::endl;
             ResourceManager::currentShader = ResourceManager::getShader("phongShader");
             Settings::blinn = true;
+        }
+
+        ImGui::Text("Change Material");
+        if (ImGui::Button("Custom"))
+        {
+            std::cout << "Changing material to Custom" << std::endl;
+            ResourceManager::currentMaterial = ResourceManager::getMaterial("custom");
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Iron"))
+        {
+            std::cout << "Changing material to Iron" << std::endl;
+            ResourceManager::currentMaterial = ResourceManager::getMaterial("iron");
+        }
+
+        ImGui::SameLine();
+
+        if (ImGui::Button("Iron"))
+        {
+            std::cout << "Changing material to Iron" << std::endl;
+            ResourceManager::currentMaterial = ResourceManager::getMaterial("iron");
         }
 
 
@@ -131,6 +154,23 @@ public:
             glBindTexture(GL_TEXTURE_2D, ResourceManager::currentTexture.ID);
         }
 
+        ImGui::Text("Light Settings");
+        if (ImGui::Button("Pointlight Toggle"))
+        {
+            LightSource& light = ResourceManager::LightSources[0];
+
+            if (light.pointLight == false)
+            {
+                std::cout << "Changing light to Point Light" << std::endl;
+                light.pointLight = true;
+            }
+
+            else
+            {
+                std::cout << "Changing light to Directional Light" << std::endl;
+                light.pointLight = false;
+            }
+        }
 
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
         ImGui::End();
