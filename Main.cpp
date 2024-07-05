@@ -70,9 +70,6 @@ int main()
     // Load Resources
     ResourceManager::initialise();
 
-    // light source
-    //LightSource Light(ResourceManager::getShader("lightShader"));
-
 
     // Main Loop
     while (!glfwWindowShouldClose(window))
@@ -101,32 +98,29 @@ int main()
         // render gemetry
         glm::mat4 model = glm::mat4(1.0f); // identity matrix
         model = glm::translate(model, Settings::trans); // translate model
-        //model = glm::translate(model, glm::vec3(100.0f)); // TEMP
         model = glm::scale(model, glm::vec3(Settings::scale)); // scale model
         ResourceManager::currentShader.setMat4("model", model);
-
         ResourceManager::currentShader.setVec3("viewPos", Camera::positionVec);
 
 
-        // ---------------------------------------------------------------
+        // ------ Light Calculations ---------------------------------------
         // Change light position
         float time = static_cast<float>(glfwGetTime());
-        LightSource& Light = ResourceManager::LightSources[0];
+        LightSource Light = ResourceManager::LightSources[0];
 
         Light.posVec.x = 10 * glm::sin(time);
         Light.posVec.y = 5 * glm::sin(time);
         Light.posVec.z = 10 * glm::cos(time);
  
-        //Light.posVec = glm::vec3(0.0f, 0.0f, -10.0f);
         ResourceManager::currentShader.setVec3("light.pos", Light.posVec);
-
-        Light.drawLight(ResourceManager::getShader("lightShader"), projection, view);
-        
         //------------------------------------------------------------------
 
-        // Draw model
-        ResourceManager::currentModel.drawModel(ResourceManager::currentShader);
+        // Update shader data
+        ResourceManager::uploadDatatoShader();
 
+        // Draw commands
+        Light.drawLight(ResourceManager::getShader("lightShader"), projection, view);
+        ResourceManager::currentModel.drawModel(ResourceManager::currentShader);
 
         // Render GUI
         GUI::GUI_loop(io);

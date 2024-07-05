@@ -15,11 +15,7 @@ public:
 
 	bool pointLight;
 	glm::vec3 posVec;
-
-	glm::vec3 lightColour;
-	glm::vec3 ambientAlbedo;
-	glm::vec3 diffuseAlbedo;
-	glm::vec3 specularAlbedo;
+	glm::vec3 colour;
 
 	// Constructor
 	LightSource(Shader shader)
@@ -29,7 +25,6 @@ public:
 
 	void drawLight(Shader shader, glm::mat4 projection, glm::mat4 view)
 	{
-		
 		shader.use();
 		shader.setMat4("projection", projection);
 		shader.setMat4("view", view);
@@ -50,7 +45,6 @@ public:
 
 		glDrawArrays(GL_POINTS, 0, 1);
 		glBindVertexArray(0);
-		return;
 	}
 
 private:

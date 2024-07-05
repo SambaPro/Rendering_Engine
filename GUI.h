@@ -81,7 +81,7 @@ public:
         ImGui::Text("Change Shader");
         if (ImGui::Button("Default"))
         {
-            std::cout << "Changing shader to Texture" << std::endl;
+            std::cout << "Changing shader to Default" << std::endl;
             ResourceManager::currentShader = ResourceManager::getShader("defaultShader");
         }
 
@@ -91,7 +91,7 @@ public:
         {
             std::cout << "Changing shader to Phong" << std::endl;
             ResourceManager::currentShader = ResourceManager::getShader("phongShader");
-            ResourceManager::currentShader.setBool("blinn", false);
+            Settings::blinn = false;
         }
 
         ImGui::SameLine();
@@ -100,16 +100,16 @@ public:
         {
             std::cout << "Changing shader to Blinn-Phong" << std::endl;
             ResourceManager::currentShader = ResourceManager::getShader("phongShader");
-            ResourceManager::currentShader.setBool("blinn", true);
+            Settings::blinn = true;
         }
 
 
         ImGui::Text("Change Texture");
 
-        if (ImGui::Button("Colour"))
+        if (ImGui::Button("None"))
         {
-            std::cout << "Changing T=texture to Colour" << std::endl;
-            ResourceManager::currentShader.setBool("texture_setting", false);
+            std::cout << "Changing to None" << std::endl;
+            Settings::texture_setting = false;
 
         }
         ImGui::SameLine();
@@ -117,7 +117,7 @@ public:
         if (ImGui::Button("Default Texture"))
         {
             std::cout << "Changing texture to default" << std::endl;
-            ResourceManager::currentShader.setBool("texture_setting", true);
+            Settings::texture_setting = true;
             ResourceManager::currentTexture = ResourceManager::getTexture("default");
             glBindTexture(GL_TEXTURE_2D, ResourceManager::currentTexture.ID);
         }
@@ -126,7 +126,7 @@ public:
         if (ImGui::Button("Brick"))
         {
             std::cout << "Changing texture to Brick" << std::endl;
-            ResourceManager::currentShader.setBool("texture_setting", true);
+            Settings::texture_setting = true;
             ResourceManager::currentTexture = ResourceManager::getTexture("brick");
             glBindTexture(GL_TEXTURE_2D, ResourceManager::currentTexture.ID);
         }

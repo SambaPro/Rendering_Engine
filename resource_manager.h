@@ -9,6 +9,7 @@
 #include "shader.h"
 #include "model.h"
 #include "light_source.h"
+#include "material.h"
 
 class ResourceManager
 {
@@ -17,10 +18,12 @@ public:
 	inline static std::map<std::string, Texture> Textures;
 	inline static std::map<std::string, Model> Models;
 	inline static std::vector<LightSource> LightSources;
+	inline static std::map<std::string, Material> Materials;
 
 	inline static Shader currentShader;
 	inline static Model currentModel;
 	inline static Texture currentTexture;
+	inline static Material currentMaterial;
 
 	static void initialise()
 	{
@@ -28,31 +31,66 @@ public:
 		initialiseModels();
 		initialiseTextures();
 		initialiseLightSources();
+		initialiseMaterials();
+		currentShader = getShader("defaultShader");
+		currentShader.use();
 	};
 
 	// Getters
-	static Shader getShader(std::string name) {return ResourceManager::Shaders[name];}
-	static Model getModel(std::string name) {return ResourceManager::Models[name];}
-	static Texture getTexture(std::string name) {return ResourceManager::Textures[name];}
+	static Shader getShader(std::string name) {return Shaders[name];}
+	static Model getModel(std::string name) {return Models[name];}
+	static Texture getTexture(std::string name) {return Textures[name];}
+	static Material getMaterial(std::string name) {return Materials[name];}
 
 	// Load resource into manager
 	static void loadShader(std::string name, Shader shader)
 	{
-		ResourceManager::Shaders[name] = shader;
-		std::cout << "Shader ID: " << ResourceManager::Shaders[name].ID << " loaded successfully" << std::endl;
-	};
+		Shaders[name] = shader;
+		std::cout << "Shader ID: " << Shaders[name].ID << " loaded successfully" << std::endl;
+	}
 
 	static void loadModel(std::string name, Model model)
 	{
-		ResourceManager::Models[name] = model;
+		Models[name] = model;
 		std::cout << "Model loaded successfully" << std::endl;
-	};
+	}
 
 	static void loadTexture(std::string name, Texture texture)
 	{
-		ResourceManager::Textures[name] = texture;
-		std::cout << "Texture ID: " << ResourceManager::Textures[name].ID << " loaded successfully" << std::endl;
-	};
+		Textures[name] = texture;
+		std::cout << "Texture ID: " << Textures[name].ID << " loaded successfully" << std::endl;
+	}
+
+	static void loadMaterial(std::string name, Material material)
+	{
+		Materials[name] = material;
+		std::cout << "Material " << name << " loaded successfully" << std::endl;
+	}
+
+	static void uploadDatatoShader()
+	{
+		currentShader.use();
+
+		// TODO UNIFORM BUFFER OBJECT
+
+		// Settings
+		currentShader.setBool("settings.texture_setting", Settings::texture_setting);
+		currentShader.setBool("settings.blinn", Settings::blinn);
+
+		// Material Data
+		Material material = ResourceManager::currentMaterial;
+		currentShader.setVec3("material.colour", material.colour);
+		currentShader.setFloat("material.ambientAlbedo", material.ambientAlbedo);
+		currentShader.setFloat("material.diffuseAlbedo", material.diffuseAlbedo);
+		currentShader.setFloat("material.specularAlbedo", material.specularAlbedo);
+		currentShader.setFloat("material.shininess", material.shininess);
+
+		// Light Data
+		LightSource light = LightSources[0];
+		//currentShader.setVec3("light.pos", glm::vec3(100.0f, 100.0f, 100.0f)); // Position vector of light source
+		currentShader.setVec3("light.colour", light.colour);    // Colour of ambient light
+
+	}
 
 private:
 	static void initialiseShaders()
@@ -60,29 +98,14 @@ private:
 		Shader phongShader("src/shaders/vertex_shader.vs", "src/shaders/phong_shader.fs");
 		Shader defaultShader("src/shaders/vertex_shader.vs", "src/shaders/default_shader.fs");
 		Shader lightShader("src/shaders/lightsource_shader.vs", "src/shaders/lightsource_shader.fs");
-		ResourceManager::loadShader("phongShader", phongShader);
-		ResourceManager::loadShader("defaultShader", defaultShader);
-		ResourceManager::loadShader("lightShader", lightShader);
+		loadShader("phongShader", phongShader);
+		loadShader("defaultShader", defaultShader);
+		loadShader("lightShader", lightShader);
 
-		//TODO UNIFORM BUFFER
 
 		// load phong shader
-		ResourceManager::currentShader = ResourceManager::getShader("phongShader");
-		ResourceManager::currentShader.use();
-		ResourceManager::currentShader.setVec3("objectColour", glm::vec3(1.0f, 0.5f, 0.0f));
-		ResourceManager::currentShader.setFloat("shininess", 64.0);
-
-		// load light source
-		ResourceManager::currentShader.setVec3("light.pos", glm::vec3(100.0f, 100.0f, 100.0f)); // Position vector of light source
-		ResourceManager::currentShader.setVec3("light.colour", glm::vec3(1.0f, 1.0f, 1.0f));    // Colour of ambient light
-		ResourceManager::currentShader.setFloat("light.ambientAlbedo", 0.5f);                   // Intensity of ambient light
-		ResourceManager::currentShader.setFloat("light.diffuseAlbedo", 0.5f);                   // Intensity of diffuse light
-		ResourceManager::currentShader.setFloat("light.specularAlbedo", 0.5f);                  // Intensity of specular light
-
-		// load default shader
-		ResourceManager::currentShader = ResourceManager::getShader("defaultShader");
-		ResourceManager::currentShader.use();
-		ResourceManager::currentShader.setVec3("objectColour", glm::vec3(1.0f, 0.5f, 0.0f));
+		currentShader = getShader("phongShader");
+		currentShader.use();
 	};
 
 	static void initialiseModels()
@@ -91,30 +114,59 @@ private:
 		Model teapotModel("src/assets/teapot.obj");
 		Model sphereModel("src/assets/sphere.obj");
 		Model cowModel("src/assets/cow.obj");
-		ResourceManager::loadModel("cubeModel", cubeModel);
-		ResourceManager::loadModel("teapotModel", teapotModel);
-		ResourceManager::loadModel("sphereModel", sphereModel);
-		ResourceManager::loadModel("cowModel", cowModel);
+		loadModel("cubeModel", cubeModel);
+		loadModel("teapotModel", teapotModel);
+		loadModel("sphereModel", sphereModel);
+		loadModel("cowModel", cowModel);
 
-		ResourceManager::currentModel = ResourceManager::getModel("cubeModel");
+		currentModel = getModel("cubeModel");
 	}
 
 	static void initialiseTextures()
 	{	
 		Texture cube_default_texture = Texture("src/assets/cube/default.png");
-		ResourceManager::loadTexture("default", cube_default_texture);
+		loadTexture("default", cube_default_texture);
 
 		Texture brick_texture = Texture("src/assets/brick.jpg");
-		ResourceManager::loadTexture("brick", brick_texture);
+		loadTexture("brick", brick_texture);
 
-		ResourceManager::currentTexture = ResourceManager::getTexture("default");
-		glBindTexture(GL_TEXTURE_2D, ResourceManager::currentTexture.ID);
+		currentTexture = getTexture("default");
+		glBindTexture(GL_TEXTURE_2D, currentTexture.ID);
 	}
 
 	static void initialiseLightSources()
 	{
-		LightSources.push_back(LightSource(ResourceManager::getShader("lightShader")));
-		LightSources.push_back(LightSource(ResourceManager::getShader("lightShader")));
+		LightSource light1(getShader("lightShader"));
+		light1.pointLight = true;
+		light1.posVec = glm::vec3(0.0f);
+		light1.colour = glm::vec3(1.0f);
+
+
+		LightSources.push_back(light1);
+		//LightSources.push_back(LightSource(getShader("lightShader")));
+	}
+
+	static void initialiseMaterials()
+	{
+		Material custom;
+		custom.colour = glm::vec3(1.0f, 0.5f, 0.0f);
+		custom.shininess = 64.0f;
+		custom.ambientAlbedo = 0.5f;
+		custom.diffuseAlbedo = 0.5f;
+		custom.specularAlbedo = 0.5f;
+		loadMaterial("custom", custom);
+		currentMaterial = getMaterial("custom");
+
+		// TODO Add More materials
+		Material iron;
+		iron.colour = glm::vec3(1.0f, 0.5f, 0.0f);
+		iron.shininess = 128.0f;
+		iron.ambientAlbedo = 0.5f;
+		iron.diffuseAlbedo = 0.5f;
+		iron.specularAlbedo = 0.5f;
+		loadMaterial("iron", iron);
+
+
 	}
 
 };

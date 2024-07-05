@@ -1,26 +1,40 @@
 #version 430 core
 
-out vec4 FragColour;
+out vec4 fragColour;
 
 in vec2 textureCoordinates;
 
+struct Material
+{
+	vec3 colour;
+	float ambientAlbedo;
+	float diffuseAlbedo;
+	float specularAlbedo;
+	float shininess;
+};
+
+struct Settings
+{
+	bool texture_setting;
+	bool blinn;
+};
+
+uniform Material material;
 uniform sampler2D texture1;
-uniform bool texture_setting;
-uniform vec3 objectColour;
+uniform Settings settings;
 
 
 void main()
 {
 	
-	if (texture_setting==true)
+	if (settings.texture_setting==true)
 	{
-		FragColour = texture(texture1, textureCoordinates);
+		fragColour = texture(texture1, textureCoordinates);
 	}
 	
 	else
 	{
-		FragColour = vec4(objectColour, 1.0f);
+		fragColour = vec4(material.colour, 1.0f);
 	}
-	
 
 }
