@@ -9,8 +9,8 @@ class Settings
 {
 public:
 
-    inline static const unsigned int SCREEN_WIDTH = 800;
-    inline static const unsigned int SCREEN_HEIGHT = 600;
+    inline static const unsigned int SCREEN_WIDTH = 1024;
+    inline static const unsigned int SCREEN_HEIGHT = 768;
 
     // Delta time
     inline static float deltaTime = 0.0f;	// Time between current frame and last frame
@@ -20,7 +20,6 @@ public:
     inline static glm::vec3 trans = glm::vec3(0.0f, 0.0f, 0.0f);
     inline static bool texture_setting = false;;
     inline static bool blinn = false;;
-
 
 };
 

@@ -111,15 +111,15 @@ int main()
         Light.posVec.x = 10 * glm::sin(time);
         Light.posVec.y = 5 * glm::sin(time);
         Light.posVec.z = 10 * glm::cos(time);
+
+        //Light.posVec = glm::vec3(0.0f);
         //------------------------------------------------------------------
 
         // Update shader data
         ResourceManager::uploadDatatoShader();
 
         // Draw commands
-        if (Light.pointLight == true)
-            Light.drawLight(ResourceManager::getShader("lightShader"), projection, view);
-
+        ResourceManager::drawLights(ResourceManager::getShader("lightShader"), projection, view);
         ResourceManager::currentModel.drawModel(ResourceManager::currentShader);
 
         // Render GUI

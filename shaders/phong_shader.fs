@@ -32,23 +32,23 @@ in vec2 textureCoordinates;
 uniform sampler2D texture1;
 uniform vec3 viewPos;
 
-uniform Light light;
+uniform Light light[2];
 uniform Material material;
 uniform Settings settings;
 
 
-vec3 getAmbient()
+vec3 getAmbient(Light lightn)
 {
-	return light.colour * material.ambientAlbedo;
+	return lightn.colour * material.ambientAlbedo;
 }
 
-vec3 getDiffuse(vec3 Normal_N, vec3 lightDir_N)
+vec3 getDiffuse(Light lightn, vec3 Normal_N, vec3 lightDir_N)
 {
 	float diff = max(dot(Normal_N, lightDir_N), 0.0);
-	return diff * material.diffuseAlbedo * light.colour;
+	return diff * material.diffuseAlbedo * lightn.colour;
 }
 
-vec3 getSpecular(vec3 lightDir_N, vec3 viewDir, vec3 Normal_N, float shininess)
+vec3 getSpecular(Light lightn, vec3 lightDir_N, vec3 viewDir, vec3 Normal_N, float shininess)
 {
 	float spec = 0.0;
 
@@ -64,25 +64,34 @@ vec3 getSpecular(vec3 lightDir_N, vec3 viewDir, vec3 Normal_N, float shininess)
 		spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess); // Specular Reflectanse
 	}
 
-	return material.specularAlbedo * spec * light.colour;
+	return material.specularAlbedo * spec * lightn.colour;
 }
-
 
 
 void main()
 {
+	vec3 result = vec3(0.0);
+
 	// Normalise vectors
 	vec3 Normal_N = normalize(Normal);
-	vec3 lightDir_N = normalize(light.posVec - FragPos);
 	vec3 viewDir = normalize(viewPos - FragPos);
 
-	if (!light.pointLight)
-		lightDir_N = normalize(light.dirVec);
+	// for each lightsource loaded
+	for (int i=0; i < 2; ++i)
+	{
 
-	// Get Lighting Factors
-	vec3 ambient = getAmbient();
-	vec3 diffuse = getDiffuse(Normal_N, lightDir_N);
-	vec3 specular = getSpecular(lightDir_N, viewDir, Normal_N, material.shininess);
+		vec3 lightDir_N = normalize(light[i].posVec - FragPos);
+
+		if (!light[i].pointLight)
+			lightDir_N = normalize(light[i].dirVec);
+
+		// Get Lighting Factors
+		vec3 ambient = getAmbient(light[i]);
+		vec3 diffuse = getDiffuse(light[i], Normal_N, lightDir_N);
+		vec3 specular = getSpecular(light[i], lightDir_N, viewDir, Normal_N, material.shininess);
+
+		result += (ambient + diffuse + specular);
+	}
 
 	// Get surface colour/texture
 	vec3 colour = material.colour;
@@ -90,7 +99,6 @@ void main()
 	if (settings.texture_setting)
 		colour = texture(texture1, textureCoordinates).rgb;
 
-
 	// Get combined fragment colour
-	fragColour = vec4((ambient + diffuse + specular) * colour, 1.0f);
+	fragColour = vec4(result * colour, 1.0f);
 }

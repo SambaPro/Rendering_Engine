@@ -29,26 +29,10 @@ public:
 
 	void drawLight(Shader shader, glm::mat4 projection, glm::mat4 view)
 	{
-		shader.use();
-		shader.setMat4("projection", projection);
-		shader.setMat4("view", view);
-		shader.setMat4("model", glm::mat4(1.0f));
-		shader.setVec3("lightPos", posVec);
-
-		glPointSize(10);
-
-		float point[] = { posVec.x, posVec.y, posVec.z };
-		
-		
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(point), point, GL_DYNAMIC_DRAW);
-
-		glBindVertexArray(VAO);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(point), (void*)0);
-		glEnableVertexAttribArray(0);
-
-		glDrawArrays(GL_POINTS, 0, 1);
-		glBindVertexArray(0);
+		if (pointLight)
+			drawPointLight(shader, projection, view);
+		else
+			drawDirectionalLight(shader, projection, view);
 	}
 
 private:
@@ -63,6 +47,55 @@ private:
 		glGenBuffers(1, &VBO);
 		glBindVertexArray(0);
 	};
+
+	void drawPointLight(Shader shader, glm::mat4 projection, glm::mat4 view)
+	{
+		shader.use();
+		shader.setMat4("projection", projection);
+		shader.setMat4("view", view);
+		shader.setMat4("model", glm::mat4(1.0f));
+		shader.setVec3("lightPos", posVec);
+		shader.setVec3("colour", colour);
+
+		glPointSize(10);
+
+		float point[] = { posVec.x, posVec.y, posVec.z };
+
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(point), point, GL_DYNAMIC_DRAW);
+
+		glBindVertexArray(VAO);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(point), (void*)0);
+		glEnableVertexAttribArray(0);
+
+		glDrawArrays(GL_POINTS, 0, 1);
+		glBindVertexArray(0);
+	}
+
+	void drawDirectionalLight(Shader shader, glm::mat4 projection, glm::mat4 view)
+	{
+		shader.use();
+		shader.setMat4("projection", projection);
+		shader.setMat4("view", view);
+		shader.setMat4("model", glm::mat4(1.0f));
+		shader.setVec3("lightPos", posVec);
+
+		glPointSize(10);
+
+		float point[] = { posVec.x, posVec.y, posVec.z };
+
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(point), point, GL_DYNAMIC_DRAW);
+
+		glBindVertexArray(VAO);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(point), (void*)0);
+		glEnableVertexAttribArray(0);
+
+		glDrawArrays(GL_POINTS, 0, 1);
+		glBindVertexArray(0);
+	}
 };
 
 #endif

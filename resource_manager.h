@@ -87,11 +87,25 @@ public:
 
 		// Light Data
 		LightSource& light = LightSources[0];
-		currentShader.setVec3("light.posVec", light.posVec);
-		currentShader.setVec3("light.dirVec", light.dirVec);
-		currentShader.setVec3("light.colour", light.colour);
-		currentShader.setBool("light.pointLight", light.pointLight);
+		currentShader.setVec3("light[0].posVec", light.posVec);
+		currentShader.setVec3("light[0].dirVec", light.dirVec);
+		currentShader.setVec3("light[0].colour", light.colour);
+		currentShader.setBool("light[0].pointLight", light.pointLight);
 
+		LightSource& light2 = LightSources[1];
+		currentShader.setVec3("light[1].posVec", light2.posVec);
+		currentShader.setVec3("light[1].dirVec", light2.dirVec);
+		currentShader.setVec3("light[1].colour", light2.colour);
+		currentShader.setBool("light[1].pointLight", light2.pointLight);
+
+	}
+
+	static void drawLights(Shader shader, glm::mat4 projection, glm::mat4 view)
+	{
+		for (auto light : LightSources)
+		{
+			light.drawLight(shader, projection, view);
+		}
 	}
 
 private:
@@ -143,9 +157,14 @@ private:
 		light1.dirVec = glm::vec3(0.0f, 0.0f, 10.0f);
 		light1.posVec = glm::vec3(0.0f);
 		light1.colour = glm::vec3(1.0f);
-
-
 		LightSources.push_back(light1);
+
+		LightSource light2(getShader("lightShader"));
+		light2.pointLight = true;
+		light2.dirVec = glm::vec3(0.0f, 0.0f, 10.0f);
+		light2.posVec = glm::vec3(10.0f);
+		light2.colour = glm::vec3(1.0f);
+		LightSources.push_back(light2);
 	}
 
 	static void initialiseMaterials()
