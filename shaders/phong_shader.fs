@@ -5,6 +5,7 @@ out vec4 fragColour;
 struct Light
 {
 	bool pointLight;
+	bool activated;
 	vec3 posVec;
 	vec3 dirVec;
 	vec3 colour;
@@ -79,6 +80,8 @@ void main()
 	// for each lightsource loaded
 	for (int i=0; i < 2; ++i)
 	{
+		if (!light[i].activated)
+			return;
 
 		vec3 lightDir_N = normalize(light[i].posVec - FragPos);
 

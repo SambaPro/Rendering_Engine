@@ -12,6 +12,7 @@
 class LightSource
 {
 public:
+	bool activated;
 	bool pointLight;
 
 	// Direction light properties
@@ -79,12 +80,11 @@ private:
 		shader.setMat4("projection", projection);
 		shader.setMat4("view", view);
 		shader.setMat4("model", glm::mat4(1.0f));
-		shader.setVec3("lightPos", posVec);
+		shader.setVec3("lightPos", dirVec);
 
 		glPointSize(10);
 
-		float point[] = { posVec.x, posVec.y, posVec.z };
-
+		float point[] = { 100*dirVec.x, 100 * dirVec.y, 100 * dirVec.z };
 
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(point), point, GL_DYNAMIC_DRAW);

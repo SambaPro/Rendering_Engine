@@ -13,7 +13,7 @@ public:
     inline static const unsigned int SCREEN_HEIGHT = 768;
 
     // Delta time
-    inline static float deltaTime = 0.0f;	// Time between current frame and last frame
+    inline static float deltaTime = 0.0f; // Time between current frame and last frame
     inline static float lastFrame = 0.0f; // Time of last frame
 
 	inline static float scale = 4.0;
