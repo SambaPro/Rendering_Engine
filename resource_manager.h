@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 
+#include "camera.h"
 #include "texture.h"
 #include "shader.h"
 #include "model.h"
@@ -77,6 +78,11 @@ public:
 		currentShader.setBool("settings.texture_setting", Settings::texture_setting);
 		currentShader.setBool("settings.blinn", Settings::blinn);
 
+		// Transform Matrices
+		currentShader.setMat4("model", currentModel.modelMatrix);
+		ResourceManager::currentShader.setMat4("view", Camera::getViewMatrix());
+		ResourceManager::currentShader.setMat4("projection", Camera::getProjectionMatrix(Settings::SCREEN_WIDTH, Settings::SCREEN_HEIGHT));
+
 		// Material Data
 		Material& material = ResourceManager::currentMaterial;
 		currentShader.setVec3("material.colour", material.colour);
@@ -129,9 +135,22 @@ private:
 	static void initialiseModels()
 	{
 		Model cubeModel("src/assets/cube/cube.obj");
+		cubeModel.modelMatrix = glm::scale(cubeModel.modelMatrix, glm::vec3(4.0f));
+		cubeModel.modelMatrix = glm::translate(cubeModel.modelMatrix, glm::vec3(0.0f));
+
 		Model teapotModel("src/assets/teapot.obj");
+		teapotModel.modelMatrix = glm::scale(teapotModel.modelMatrix, glm::vec3(0.06f));
+		teapotModel.modelMatrix = glm::translate(teapotModel.modelMatrix, glm::vec3(0.0f, -30.0f, 0.0f));
+
 		Model sphereModel("src/assets/sphere.obj");
+		sphereModel.modelMatrix = glm::scale(sphereModel.modelMatrix, glm::vec3(1.0f));
+		sphereModel.modelMatrix = glm::translate(sphereModel.modelMatrix, glm::vec3(0.0f, 0.0f, 0.0f));
+
 		Model cowModel("src/assets/cow.obj");
+		sphereModel.modelMatrix = glm::scale(sphereModel.modelMatrix, glm::vec3(0.8f));
+		sphereModel.modelMatrix = glm::translate(sphereModel.modelMatrix, glm::vec3(0.0f, 0.0f, 0.0f));
+
+
 		loadModel("cubeModel", cubeModel);
 		loadModel("teapotModel", teapotModel);
 		loadModel("sphereModel", sphereModel);

@@ -15,28 +15,27 @@
 #include "shader.h"
 #include "mesh.h"
 
-//#define MODEL_DEBUG 1;
-
 class Model
 {
 public:
 	std::vector<Mesh> meshes;
+	glm::mat4 modelMatrix = glm::mat4(1.0f);
 
-	/* Model Constructor*/
+	// Model Constructor
 	Model() {};
 	Model(const char* path)
 	{
 		loadModel(path);
 	}
 
-	/* Draws all meshes in model */
+	// Draws all meshes in model
 	void drawModel(Shader shader)
 	{
 		shader.use();
 
-		for (int i = 0; i < meshes.size(); ++i)
+		for (auto mesh : meshes)
 		{
-			meshes[i].drawMesh();
+			mesh.drawMesh();
 		};
 	}
 
@@ -52,7 +51,6 @@ private:
 			std::cout << "ERROR::ASSIMP::" << importer.GetErrorString() << std::endl;
 			return;
 		}
-		std::string directory = path.substr(0, path.find_last_of('/'));
 
 		processNode(scene->mRootNode, scene);
 	};
@@ -63,20 +61,9 @@ private:
 		for (unsigned int i = 0; i < node->mNumMeshes; i++)
 		{
 			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-			try
-			{
-				#if MODEL_DEBUG
-					std::cout << "node->mNumMeshes:" << node->mNumMeshes << std::endl;
-					std::cout << "mNumVertices: " << mesh->mNumVertices << std::endl;
-				#endif
-
-				meshes.push_back(processMesh(mesh, scene));
-			}
-			catch(...)
-			{
-				std::cout << "Error: Mesh cannot be processed" << std::endl;
-			}
+			meshes.push_back(processMesh(mesh, scene));
 		}
+
 		// process child nodes if any
 		for (unsigned int i = 0; i < node->mNumChildren; i++)
 		{

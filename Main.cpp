@@ -51,12 +51,12 @@ int main()
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);        // Locks and centres mouse to window
 
 
-    // glad: load all OpenGL function pointers
+    //glad: load all OpenGL function pointers
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialise GLAD" << std::endl;
         return -1;
-    }
+    } 
 
     // Enable depth rendering
     glEnable(GL_DEPTH_TEST);
@@ -83,24 +83,10 @@ int main()
 
 
         // Clear Buffers
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         ResourceManager::currentShader.use();
-
-        // get view and projection matrices and send to shader class
-        glm::mat4 view = Camera::getViewMatrix();
-        ResourceManager::currentShader.setMat4("view", view);
-
-        glm::mat4 projection = Camera::getProjectionMatrix(Settings::SCREEN_WIDTH, Settings::SCREEN_HEIGHT);
-        ResourceManager::currentShader.setMat4("projection", projection);
-
-        // get model matrix
-        glm::mat4 model = glm::mat4(1.0f); // identity matrix
-        model = glm::translate(model, Settings::trans); // translate model
-        model = glm::scale(model, glm::vec3(Settings::scale)); // scale model
-        ResourceManager::currentShader.setMat4("model", model);
-        ResourceManager::currentShader.setVec3("viewPos", Camera::positionVec);
 
 
         // ------ Light Calculations ---------------------------------------
@@ -119,8 +105,10 @@ int main()
         ResourceManager::uploadDatatoShader();
 
         // Draw commands
-        ResourceManager::drawLights(ResourceManager::getShader("lightShader"), projection, view);
         ResourceManager::currentModel.drawModel(ResourceManager::currentShader);
+        ResourceManager::drawLights(ResourceManager::getShader("lightShader"), 
+                                    Camera::getProjectionMatrix(Settings::SCREEN_WIDTH, Settings::SCREEN_HEIGHT), 
+                                    Camera::getViewMatrix());
 
         // Render GUI
         GUI::GUI_loop(io);

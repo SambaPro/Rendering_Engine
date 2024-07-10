@@ -42,8 +42,6 @@ public:
         if (ImGui::Button("Cube"))
         {
             std::cout << "Changing model to Cube" << std::endl;
-            Settings::scale = 4.0;
-            Settings::trans = glm::vec3(0.0f, 0.0f, 0.0f);
             ResourceManager::currentModel = ResourceManager::getModel("cubeModel");
         }
 
@@ -52,8 +50,6 @@ public:
         if (ImGui::Button("Teapot"))
         {
             std::cout << "Changing model to Teapot" << std::endl;
-            Settings::scale = 0.06f;
-            Settings::trans = glm::vec3(0.0f, -2.0f, 0.0f);
             ResourceManager::currentModel = ResourceManager::getModel("teapotModel");
         }
 
@@ -62,8 +58,6 @@ public:
         if (ImGui::Button("Sphere"))
         {
             std::cout << "Changing model to Sphere" << std::endl;
-            Settings::scale = 1.0f;
-            //Settings::trans = glm::vec3(0.0f, -2.0f, 0.0f);
             ResourceManager::currentModel = ResourceManager::getModel("sphereModel");
         }
 
@@ -72,8 +66,6 @@ public:
         if (ImGui::Button("Cow"))
         {
             std::cout << "Changing model to Cow" << std::endl;
-            Settings::scale = 0.8f;
-            Settings::trans = glm::vec3(0.0f, 0.0f, 0.0f);
             ResourceManager::currentModel = ResourceManager::getModel("cowModel");
         }
 
