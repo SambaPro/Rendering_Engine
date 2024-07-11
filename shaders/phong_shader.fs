@@ -7,7 +7,6 @@ struct Light
 	bool pointLight;
 	bool activated;
 	vec3 posVec;
-	vec3 dirVec;
 	vec3 colour;
 };
 
@@ -81,12 +80,12 @@ void main()
 	for (int i=0; i < 2; ++i)
 	{
 		if (!light[i].activated)
-			return;
+			continue;
 
 		vec3 lightDir_N = normalize(light[i].posVec - FragPos);
 
 		if (!light[i].pointLight)
-			lightDir_N = normalize(light[i].dirVec);
+			lightDir_N = normalize(light[i].posVec);
 
 		// Get Lighting Factors
 		vec3 ambient = getAmbient(light[i]);

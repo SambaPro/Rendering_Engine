@@ -6,6 +6,7 @@
 #include <imgui/imgui_impl_opengl3.h>
 
 #include <iostream>
+#include <string>
 
 #include "resource_manager.h"
 #include "settings.h"
@@ -37,131 +38,153 @@ public:
 
         ImGui::Begin("Menu"); // create new window
 
-
-        ImGui::Text("Change Model");
-        if (ImGui::Button("Cube"))
+        //------------- Switch Models -------------------
+        if (ImGui::CollapsingHeader("Change Model"))
         {
-            std::cout << "Changing model to Cube" << std::endl;
-            ResourceManager::currentModel = ResourceManager::getModel("cubeModel");
+            if (ImGui::Button("Cube"))
+            {
+                std::cout << "Changing model to Cube" << std::endl;
+                    ResourceManager::currentModel = ResourceManager::getModel("cubeModel");
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Teapot"))
+            {
+                std::cout << "Changing model to Teapot" << std::endl;
+                ResourceManager::currentModel = ResourceManager::getModel("teapotModel");
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Sphere"))
+            {
+                std::cout << "Changing model to Sphere" << std::endl;
+                ResourceManager::currentModel = ResourceManager::getModel("sphereModel");
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Cow"))
+            {
+                std::cout << "Changing model to Cow" << std::endl;
+                ResourceManager::currentModel = ResourceManager::getModel("cowModel");
+            }
+        };
+
+
+        //------------- Switch Shaders -------------------
+        if (ImGui::CollapsingHeader("Change Shader"))
+        {
+            if (ImGui::Button("Default"))
+            {
+                std::cout << "Changing shader to Default" << std::endl;
+                ResourceManager::currentShader = ResourceManager::getShader("defaultShader");
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Phong"))
+            {
+                std::cout << "Changing shader to Phong" << std::endl;
+                ResourceManager::currentShader = ResourceManager::getShader("phongShader");
+                Settings::blinn = false;
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Blinn-Phong"))
+            {
+                std::cout << "Changing shader to Blinn-Phong" << std::endl;
+                ResourceManager::currentShader = ResourceManager::getShader("phongShader");
+                Settings::blinn = true;
+            }
         }
 
-        ImGui::SameLine();
-
-        if (ImGui::Button("Teapot"))
+        //------------- Texture Options-------------------
+        if (ImGui::CollapsingHeader("Change Texture"))
         {
-            std::cout << "Changing model to Teapot" << std::endl;
-            ResourceManager::currentModel = ResourceManager::getModel("teapotModel");
+            if (ImGui::Button("None"))
+            {
+                std::cout << "Changing to None" << std::endl;
+                Settings::texture_setting = false;
+
+            }
+            ImGui::SameLine();
+
+            if (ImGui::Button("Default Texture"))
+            {
+                std::cout << "Changing texture to default" << std::endl;
+                Settings::texture_setting = true;
+                ResourceManager::currentTexture = ResourceManager::getTexture("default");
+                glBindTexture(GL_TEXTURE_2D, ResourceManager::currentTexture.ID);
+            }
+            ImGui::SameLine();
+
+            if (ImGui::Button("Brick"))
+            {
+                std::cout << "Changing texture to Brick" << std::endl;
+                Settings::texture_setting = true;
+                ResourceManager::currentTexture = ResourceManager::getTexture("brick");
+                glBindTexture(GL_TEXTURE_2D, ResourceManager::currentTexture.ID);
+            }
         }
 
-        ImGui::SameLine();
-
-        if (ImGui::Button("Sphere"))
+        //------------- Material Options-------------------
+        if (ImGui::CollapsingHeader("Change Material"))
         {
-            std::cout << "Changing model to Sphere" << std::endl;
-            ResourceManager::currentModel = ResourceManager::getModel("sphereModel");
+            static ImGuiSliderFlags flags = ImGuiSliderFlags_None;
+            Material& material = ResourceManager::currentMaterial;
+
+            ImGui::SliderFloat("Ambient Albedo", &material.ambientAlbedo, 0.0f, 1.0f, "%.3f", flags);
+            ImGui::SliderFloat("Diffuse Albedo", &material.diffuseAlbedo, 0.0f, 1.0f, "%.3f", flags);
+            ImGui::SliderFloat("Specular Albedo", &material.specularAlbedo, 0.0f, 1.0f, "%.3f", flags);
+            ImGui::SliderFloat("Shininess", &material.shininess, 1.0f, 256.0f, "%.3f", flags);
+           
+            float colour[3] = { material.colour.x, material.colour.y, material.colour.z };
+            ImGui::ColorEdit3("colour", colour);
+            material.colour = glm::vec3(colour[0], colour[1], colour[2]);
+
+
         }
 
-        ImGui::SameLine();
-
-        if (ImGui::Button("Cow"))
-        {
-            std::cout << "Changing model to Cow" << std::endl;
-            ResourceManager::currentModel = ResourceManager::getModel("cowModel");
-        }
-
-        // Shaders
-        ImGui::Text("Change Shader");
-        if (ImGui::Button("Default"))
-        {
-            std::cout << "Changing shader to Default" << std::endl;
-            ResourceManager::currentShader = ResourceManager::getShader("defaultShader");
-        }
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("Phong"))
-        {
-            std::cout << "Changing shader to Phong" << std::endl;
-            ResourceManager::currentShader = ResourceManager::getShader("phongShader");
-            Settings::blinn = false;
-        }
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("Blinn-Phong"))
-        {
-            std::cout << "Changing shader to Blinn-Phong" << std::endl;
-            ResourceManager::currentShader = ResourceManager::getShader("phongShader");
-            Settings::blinn = true;
-        }
-
-        ImGui::Text("Change Material");
-        if (ImGui::Button("Custom"))
-        {
-            std::cout << "Changing material to Custom" << std::endl;
-            ResourceManager::currentMaterial = ResourceManager::getMaterial("custom");
-        }
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("Iron"))
-        {
-            std::cout << "Changing material to Iron" << std::endl;
-            ResourceManager::currentMaterial = ResourceManager::getMaterial("iron");
-        }
-
-        ImGui::SameLine();
-
-        if (ImGui::Button("Iron"))
-        {
-            std::cout << "Changing material to Iron" << std::endl;
-            ResourceManager::currentMaterial = ResourceManager::getMaterial("iron");
-        }
-
-
-        ImGui::Text("Change Texture");
-
-        if (ImGui::Button("None"))
-        {
-            std::cout << "Changing to None" << std::endl;
-            Settings::texture_setting = false;
-
-        }
-        ImGui::SameLine();
-
-        if (ImGui::Button("Default Texture"))
-        {
-            std::cout << "Changing texture to default" << std::endl;
-            Settings::texture_setting = true;
-            ResourceManager::currentTexture = ResourceManager::getTexture("default");
-            glBindTexture(GL_TEXTURE_2D, ResourceManager::currentTexture.ID);
-        }
-        ImGui::SameLine();
-
-        if (ImGui::Button("Brick"))
-        {
-            std::cout << "Changing texture to Brick" << std::endl;
-            Settings::texture_setting = true;
-            ResourceManager::currentTexture = ResourceManager::getTexture("brick");
-            glBindTexture(GL_TEXTURE_2D, ResourceManager::currentTexture.ID);
-        }
-
+        //------------- Light Options-------------------
         ImGui::Text("Light Settings");
-        if (ImGui::Button("Pointlight Toggle"))
+        for (int i=0; i< size(ResourceManager::LightSources); ++i)
         {
-            LightSource& light = ResourceManager::LightSources[0];
+            LightSource& light = ResourceManager::LightSources[i];
+            std::string name = "Light " + std::to_string(i);
 
-            if (light.pointLight == false)
+            if (ImGui::CollapsingHeader(name.c_str()))
             {
-                std::cout << "Changing light to Point Light" << std::endl;
-                light.pointLight = true;
+                ImGui::PushID(i);
+                static ImGuiSliderFlags flags = ImGuiSliderFlags_None;
+
+                // Checkboxes
+                ImGui::Checkbox("Active", &light.activated);
+                ImGui::Checkbox("Pointlight", &light.pointLight);
+
+                // Orbit
+                ImGui::Checkbox("Orbit", &light.orbit);
+                ImGui::SliderFloat("Radius", &light.radius, 0.0f, 10.0f, "%.3f", flags);
+                ImGui::SliderFloat("Orbit Speed", &light.orbit_speed, 0.0f, 10.0f, "%.3f", flags);
+
+                
+
+                // Light Position
+                ImGui::Text("Light Position");
+                ImGui::SliderFloat("X Position", &light.posVec.x, -10.0f, 10.0f, "%.3f", flags);
+                ImGui::SliderFloat("Y Position", &light.posVec.y, -10.0f, 10.0f, "%.3f", flags);
+                ImGui::SliderFloat("Z Position", &light.posVec.z, -10.0f, 10.0f, "%.3f", flags);
+
+                // Light Colour
+                float colour[3] = { light.colour.x, light.colour.y, light.colour.z };
+                ImGui::ColorEdit3("colour", colour);
+                light.colour = glm::vec3(colour[0], colour[1], colour[2]);
+
+                ImGui::PopID();
             }
 
-            else
-            {
-                std::cout << "Changing light to Directional Light" << std::endl;
-                light.pointLight = false;
-            }
         }
 
         ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);

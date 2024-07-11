@@ -11,14 +11,16 @@
 
 class LightSource
 {
+private:
+	unsigned int VAO, VBO;
+
 public:
 	bool activated;
+	bool orbit;
+	float radius;
 	bool pointLight;
+	float orbit_speed;
 
-	// Direction light properties
-	glm::vec3 dirVec;
-
-	// Point light properties
 	glm::vec3 posVec;
 	glm::vec3 colour;
 
@@ -30,33 +32,15 @@ public:
 
 	void drawLight(Shader shader, glm::mat4 projection, glm::mat4 view)
 	{
-		if (pointLight)
-			drawPointLight(shader, projection, view);
-		else
-			drawDirectionalLight(shader, projection, view);
-	}
-
-private:
-	unsigned int VAO, VBO;
-
-	void initialise(Shader shader)
-	{
-		pointLight = true;
-
-		shader.use();
-		glGenVertexArrays(1, &VAO);
-		glGenBuffers(1, &VBO);
-		glBindVertexArray(0);
-	};
-
-	void drawPointLight(Shader shader, glm::mat4 projection, glm::mat4 view)
-	{
+		if (!activated)
+			return;
+		
 		shader.use();
 		shader.setMat4("projection", projection);
 		shader.setMat4("view", view);
 		shader.setMat4("model", glm::mat4(1.0f));
-		shader.setVec3("lightPos", posVec);
 		shader.setVec3("colour", colour);
+
 
 		glPointSize(10);
 
@@ -72,28 +56,34 @@ private:
 
 		glDrawArrays(GL_POINTS, 0, 1);
 		glBindVertexArray(0);
+	};
+
+	void processLight()
+	{
+		if (!(orbit && activated))
+			return;
+
+		float time = static_cast<float>(glfwGetTime());
+
+		posVec.x = radius * glm::sin(orbit_speed * time);
+		posVec.y = radius * glm::sin(orbit_speed * time);
+		posVec.z = radius * glm::cos(orbit_speed * time);
+
 	}
 
-	void drawDirectionalLight(Shader shader, glm::mat4 projection, glm::mat4 view)
+private:
+	void initialise(Shader shader)
 	{
+		orbit = false;
+		pointLight = true;
+		orbit_speed = 1.0f;
+		radius = 10.0f;
+
+		colour = glm::vec3(1.0f);
+
 		shader.use();
-		shader.setMat4("projection", projection);
-		shader.setMat4("view", view);
-		shader.setMat4("model", glm::mat4(1.0f));
-		shader.setVec3("lightPos", dirVec);
-
-		glPointSize(10);
-
-		float point[] = { 100*dirVec.x, 100 * dirVec.y, 100 * dirVec.z };
-
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(point), point, GL_DYNAMIC_DRAW);
-
-		glBindVertexArray(VAO);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(point), (void*)0);
-		glEnableVertexAttribArray(0);
-
-		glDrawArrays(GL_POINTS, 0, 1);
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
 		glBindVertexArray(0);
 	}
 };

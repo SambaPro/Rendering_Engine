@@ -72,8 +72,6 @@ public:
 	{
 		currentShader.use();
 
-		// TODO UNIFORM BUFFER OBJECT
-
 		// Settings
 		currentShader.setBool("settings.texture_setting", Settings::texture_setting);
 		currentShader.setBool("settings.blinn", Settings::blinn);
@@ -94,18 +92,20 @@ public:
 		// Light Data
 		LightSource& light = LightSources[0];
 		currentShader.setVec3("light[0].posVec", light.posVec);
-		currentShader.setVec3("light[0].dirVec", light.dirVec);
 		currentShader.setVec3("light[0].colour", light.colour);
 		currentShader.setBool("light[0].pointLight", light.pointLight);
 		currentShader.setBool("light[0].activated", light.activated);
-
+		currentShader.setBool("light[0].orbit", light.orbit);
+		currentShader.setFloat("light[0].radius", light.radius);
+		
 		LightSource& light2 = LightSources[1];
 		currentShader.setVec3("light[1].posVec", light2.posVec);
-		currentShader.setVec3("light[1].dirVec", light2.dirVec);
 		currentShader.setVec3("light[1].colour", light2.colour);
 		currentShader.setBool("light[1].pointLight", light2.pointLight);
 		currentShader.setBool("light[1].activated", light2.activated);
-
+		currentShader.setBool("light[1].orbit", light2.orbit);
+		currentShader.setFloat("light[1].radius", light2.radius);
+		
 	}
 
 	static void drawLights(Shader shader, glm::mat4 projection, glm::mat4 view)
@@ -126,10 +126,6 @@ private:
 		loadShader("defaultShader", defaultShader);
 		loadShader("lightShader", lightShader);
 
-
-		// load phong shader
-		currentShader = getShader("phongShader");
-		currentShader.use();
 	};
 
 	static void initialiseModels()
@@ -149,7 +145,6 @@ private:
 		Model cowModel("src/assets/cow.obj");
 		sphereModel.modelMatrix = glm::scale(sphereModel.modelMatrix, glm::vec3(0.8f));
 		sphereModel.modelMatrix = glm::translate(sphereModel.modelMatrix, glm::vec3(0.0f, 0.0f, 0.0f));
-
 
 		loadModel("cubeModel", cubeModel);
 		loadModel("teapotModel", teapotModel);
@@ -174,19 +169,13 @@ private:
 	static void initialiseLightSources()
 	{
 		LightSource light1(getShader("lightShader"));
-		light1.pointLight = true;
 		light1.activated = true;
-		light1.dirVec = glm::vec3(0.0f, 0.0f, 10.0f);
-		light1.posVec = glm::vec3(0.0f);
-		light1.colour = glm::vec3(1.0f);
+		light1.posVec = glm::vec3(0.0f, 0.0f, 10.0f);
 		LightSources.push_back(light1);
-
+		
 		LightSource light2(getShader("lightShader"));
-		light2.pointLight = true;
-		light2.activated = true;
-		light2.dirVec = glm::vec3(0.0f, 0.0f, 10.0f);
+		light2.activated = false;
 		light2.posVec = glm::vec3(10.0f);
-		light2.colour = glm::vec3(1.0f);
 		LightSources.push_back(light2);
 	}
 
@@ -200,19 +189,7 @@ private:
 		custom.specularAlbedo = 0.5f;
 		loadMaterial("custom", custom);
 		currentMaterial = getMaterial("custom");
-
-		// TODO Add More materials
-		Material iron;
-		iron.colour = glm::vec3(1.0f, 0.5f, 0.0f);
-		iron.shininess = 128.0f;
-		iron.ambientAlbedo = 0.5f;
-		iron.diffuseAlbedo = 0.5f;
-		iron.specularAlbedo = 0.5f;
-		loadMaterial("iron", iron);
-
-
 	}
-
 };
 
 #endif

@@ -88,18 +88,11 @@ int main()
 
         ResourceManager::currentShader.use();
 
+        for (auto& light : ResourceManager::LightSources)
+        {
+            light.processLight();
+        }
 
-        // ------ Light Calculations ---------------------------------------
-        // Change light position
-        float time = static_cast<float>(glfwGetTime());
-        LightSource& Light = ResourceManager::LightSources[0];
-
-        Light.posVec.x = 10 * glm::sin(time);
-        Light.posVec.y = 5 * glm::sin(time);
-        Light.posVec.z = 10 * glm::cos(time);
-
-        //Light.posVec = glm::vec3(0.0f);
-        //------------------------------------------------------------------
 
         // Update shader data
         ResourceManager::uploadDatatoShader();

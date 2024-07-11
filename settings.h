@@ -19,7 +19,7 @@ public:
 	inline static float scale = 4.0;
     inline static glm::vec3 trans = glm::vec3(0.0f, 0.0f, 0.0f);
     inline static bool texture_setting = false;;
-    inline static bool blinn = false;;
+    inline static bool blinn = false;
 
 };
 
