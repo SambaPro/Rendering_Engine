@@ -19,7 +19,6 @@ public:
 	inline static std::map<std::string, Texture> Textures;
 	inline static std::map<std::string, Model> Models;
 	inline static std::vector<LightSource> LightSources;
-	inline static std::map<std::string, Material> Materials;
 
 	inline static Shader currentShader;
 	inline static Model currentModel;
@@ -41,7 +40,6 @@ public:
 	static Shader getShader(std::string name) {return Shaders[name];}
 	static Model getModel(std::string name) {return Models[name];}
 	static Texture getTexture(std::string name) {return Textures[name];}
-	static Material getMaterial(std::string name) {return Materials[name];}
 
 	// Load resource into manager
 	static void loadShader(std::string name, Shader shader)
@@ -60,12 +58,6 @@ public:
 	{
 		Textures[name] = texture;
 		std::cout << "Texture ID: " << Textures[name].ID << " loaded successfully" << std::endl;
-	}
-
-	static void loadMaterial(std::string name, Material material)
-	{
-		Materials[name] = material;
-		std::cout << "Material " << name << " loaded successfully" << std::endl;
 	}
 
 	static void uploadDatatoShader()
@@ -88,6 +80,9 @@ public:
 		currentShader.setFloat("material.diffuseAlbedo", material.diffuseAlbedo);
 		currentShader.setFloat("material.specularAlbedo", material.specularAlbedo);
 		currentShader.setFloat("material.shininess", material.shininess);
+
+		// Camera Data
+		currentShader.setVec3("viewPos", Camera::positionVec);
 
 		// Light Data
 		LightSource& light = LightSources[0];
@@ -187,8 +182,8 @@ private:
 		custom.ambientAlbedo = 0.5f;
 		custom.diffuseAlbedo = 0.5f;
 		custom.specularAlbedo = 0.5f;
-		loadMaterial("custom", custom);
-		currentMaterial = getMaterial("custom");
+
+		currentMaterial = custom;
 	}
 };
 

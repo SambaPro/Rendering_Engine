@@ -15,9 +15,6 @@ class GUI
 {
 public:
 
-    inline static bool show_demo_window = true;
-    inline static bool show_another_window = false;
-
     static ImGuiIO& GUI_setup(GLFWwindow* window)
     {
         ImGui::CreateContext();
@@ -99,6 +96,14 @@ public:
                 ResourceManager::currentShader = ResourceManager::getShader("phongShader");
                 Settings::blinn = true;
             }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("Ray Tracer"))
+            {
+                std::cout << "Changing shader to Ray Tracer" << std::endl;
+                ResourceManager::currentShader = ResourceManager::getShader("raytracerShader");
+            }
         }
 
         //------------- Texture Options-------------------
@@ -148,9 +153,15 @@ public:
 
         }
 
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+        ImGui::End();
+
+
+        ImGui::Begin("Lights"); // create new window
+
         //------------- Light Options-------------------
         ImGui::Text("Light Settings");
-        for (int i=0; i< size(ResourceManager::LightSources); ++i)
+        for (int i = 0; i < size(ResourceManager::LightSources); ++i)
         {
             LightSource& light = ResourceManager::LightSources[i];
             std::string name = "Light " + std::to_string(i);
@@ -169,8 +180,6 @@ public:
                 ImGui::SliderFloat("Radius", &light.radius, 0.0f, 10.0f, "%.3f", flags);
                 ImGui::SliderFloat("Orbit Speed", &light.orbit_speed, 0.0f, 10.0f, "%.3f", flags);
 
-                
-
                 // Light Position
                 ImGui::Text("Light Position");
                 ImGui::SliderFloat("X Position", &light.posVec.x, -10.0f, 10.0f, "%.3f", flags);
@@ -184,10 +193,8 @@ public:
 
                 ImGui::PopID();
             }
-
         }
 
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
         ImGui::End();
 
         ImGui::Render();

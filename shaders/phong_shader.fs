@@ -36,6 +36,8 @@ uniform Light light[2];
 uniform Material material;
 uniform Settings settings;
 
+int MAX_LIGHTS = 2;
+
 
 vec3 getAmbient(Light lightn)
 {
@@ -77,7 +79,7 @@ void main()
 	vec3 viewDir = normalize(viewPos - FragPos);
 
 	// for each lightsource loaded
-	for (int i=0; i < 2; ++i)
+	for (int i=0; i < MAX_LIGHTS; ++i)
 	{
 		if (!light[i].activated)
 			continue;
