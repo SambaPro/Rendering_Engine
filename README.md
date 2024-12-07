@@ -13,9 +13,7 @@ The engine is capable of rendering complex geometry and simulate lighting on the
 
 - Phong and Blinn-Phong shaders can be switched between using the GUI. The Ambient, Diffuse, and Specular components can be adjusted using the sliders.
 
-<p align="center">
-    ![PhongAmbient](images/PhongAmbient.png?raw=true)
-    ![PhongDiffuse](images/PhongDiffuse.png?raw=true)
-    ![PhongSpecular](images/PhongSpecular.png?raw=true)
-    ![PhongTotal](images/PhongTotal.png?raw=true)
-</p>
+
+| Phong Ambient | Phong Diffuse | Phong Specular | Phong Total |
+|---------------|---------------|----------------|-------------|
+|![PhongAmbient](images/PhongAmbient.png?raw=true) | ![PhongDiffuse](images/PhongDiffuse.png?raw=true) | ![PhongSpecular](images/PhongSpecular.png?raw=true) | ![PhongTotal](images/PhongTotal.png?raw=true)|
